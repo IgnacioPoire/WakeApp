@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mapTypeMenuEntries">
+        <item>Ninguno</item>
+        <item>Normal</item>
+        <item>Terrestre</item>
+        <item>Satelite</item>
+        <item>Hibrido</item>
+    </string-array>
+
+    <string-array name="mapTypeValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="alarmRadiusMenuEntries">
+        <item>100 metros</item>
+        <item>200 metros</item>
+        <item>500 metros</item>
+        <item>1 kilometro</item>
+        <item>2 kilometros</item>
+        <item>5 kilometros</item>
+    </string-array>
+
+    <string-array name="alarmRadiusValues">
+        <item>100</item>
+        <item>200</item>
+        <item>500</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>5000</item>
+    </string-array>
+
+    <string-array name="maximumSpeedMenuEntries">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>500</item>
+        <item>1000</item>
+    </string-array>
+
+    <string-array name="maximumSpeedValues">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>500</item>
+        <item>1000</item>
+    </string-array>
+
+</resources>
