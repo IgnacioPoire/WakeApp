@@ -1,4 +1,4 @@
-package com.example.wakeapp.ui.gallery;
+package com.wakeapp.ui.gallery;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.wakeapp.R;
+import com.wakeapp.R;
 
 public class GalleryFragment extends Fragment {
 

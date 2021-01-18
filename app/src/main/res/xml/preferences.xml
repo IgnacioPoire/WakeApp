@@ -5,12 +5,10 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin">
 
-    <RingtonePreference
+    <Preference
         android:title="Tono de Alarma"
         android:summary="Selecciona un ringtone personalizado para tu alarma."
-        android:key="alarmRingtone"
-        android:ringtoneType="alarm|ringtone"
-        android:showSilent="false" />
+        android:key="alarmRingtone" />
 
     <ListPreference
         android:title="Radio de acción de la Alarma"

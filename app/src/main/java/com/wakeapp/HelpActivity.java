@@ -1,4 +1,4 @@
-package com.example.wakeapp;
+package com.wakeapp;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
