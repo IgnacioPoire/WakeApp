@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=C7:93:36:2B:2C:29:6F:97:61:B6:B7:4B:0B:20:F8:CE:9A:45:5D:54%3Bcom.example.wakeapp_final
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.example.wakeapp_final
+
+    SHA-1 certificate fingerprint:
+    C7:93:36:2B:2C:29:6F:97:61:B6:B7:4B:0B:20:F8:CE:9A:45:5D:54
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBsy_ODtpLZT_BjolgDzlIASGcOZDcRRGU</string>
+</resources>
