@@ -1,16 +1,12 @@
-package com.wakeapp.ui.home;
+package com.wakeapp.ui.maps;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -22,19 +18,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.wakeapp.R;
-
 import java.util.Arrays;
-import java.util.List;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.app.Activity.RESULT_OK;
-import static android.content.ContentValues.TAG;
-
-public class HomeFragment extends Fragment {
+public class MapsFragment extends Fragment {
 
     MapView mMapView;
     private GoogleMap mMap;
@@ -43,7 +32,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
         mMapView = rootView.findViewById(R.id.map_home);
         mMapView.onCreate(savedInstanceState);
