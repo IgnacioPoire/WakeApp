@@ -40,15 +40,12 @@ public class HomeFragment extends Fragment {
     private GoogleMap mMap;
     private Marker m;
     private Intent intent;
-    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
-    private static final int RESULT_CANCELED = 0;
-    private static final int REQUEST_CODE = 2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mMapView = (MapView) rootView.findViewById(R.id.map_home);
+        mMapView = rootView.findViewById(R.id.map_home);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
 
