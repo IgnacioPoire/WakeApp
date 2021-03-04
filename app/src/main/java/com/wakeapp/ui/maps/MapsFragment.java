@@ -1,10 +1,15 @@
 package com.wakeapp.ui.maps;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,6 +17,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -25,10 +33,16 @@ import java.util.Arrays;
 
 public class MapsFragment extends Fragment {
 
-    MapView mMapView;
+    private MapView mMapView;
     private GoogleMap mMap;
-    private Marker m;
     private Intent intent;
+
+    private Marker marker;
+    private Circle circle;
+    private float radius;
+
+    private FloatingActionButton searchButton;
+    private SeekBar radiusBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,6 +51,7 @@ public class MapsFragment extends Fragment {
         mMapView = rootView.findViewById(R.id.map_home);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
+        setCircleRadius(50);
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -51,12 +66,15 @@ public class MapsFragment extends Fragment {
 
                 // Add a marker in Buenos Aires and move the camera
                 LatLng buenosAires = new LatLng(-34.6, -58.38);
-                m = mMap.addMarker(new MarkerOptions().position(buenosAires).title("Marker in Buenos Aires"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(buenosAires));
+                marker = mMap.addMarker(new MarkerOptions().position(buenosAires).title("Marker in Buenos Aires"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(buenosAires, 12));
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng arg0) {
-                        m.setPosition(arg0);
+                        setMarker(arg0.latitude, arg0.longitude);
+                        searchButton.hide();
+                        radiusBar.setProgress(0);
+                        radiusBar.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -64,12 +82,31 @@ public class MapsFragment extends Fragment {
 
         String apiKey = getString(R.string.google_maps_key);
         Places.initialize(getActivity().getApplicationContext(), apiKey);
-        FloatingActionButton searchButton = rootView.findViewById(R.id.searchButton);
+        searchButton = rootView.findViewById(R.id.searchButton);
         intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME)).build(getActivity().getApplicationContext());
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(intent, 1);
+            }
+        });
+
+        radiusBar = rootView.findViewById(R.id.radiusBar);
+        radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                circle.setRadius(progress * 5 + 50);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                searchButton.show();
+                radiusBar.setVisibility(View.GONE);
             }
         });
 
@@ -103,8 +140,11 @@ public class MapsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         LatLng position = Autocomplete.getPlaceFromIntent(data).getLatLng();
-        m.setPosition(position);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+        setMarker(position.latitude, position.longitude);
+        searchButton.hide();
+        radiusBar.setProgress(0);
+        radiusBar.setVisibility(View.VISIBLE);
         /*if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
@@ -116,6 +156,42 @@ public class MapsFragment extends Fragment {
             }
             return;
         }*/
+    }
+
+    void setMarker(double lat, double lng) {
+        clearMarker();  // If marker has a reference, remove it.
+        MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.alarm_marker_40))      // Here it is possible to specify custom icon design.
+                .position(new LatLng(lat, lng));
+        marker = mMap.addMarker(options);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
+        circle = drawCircle(new LatLng(lat, lng));
+    }
+
+    private Circle drawCircle(LatLng latLng) {
+        CircleOptions circleOptions = new CircleOptions()
+                .center(latLng)
+                .radius(radius)
+                .fillColor(0x33FCBA03)              // 33 for alpha (transparency) #fcba03
+                .strokeColor(Color.BLACK)
+                .strokeWidth(3);
+        return mMap.addCircle(circleOptions);
+    }
+
+    private void clearMarker() {
+        if (marker != null) {
+            marker.remove(); // remove from map
+            marker = null;
+        }
+        if (circle != null) {
+            circle.remove();
+            circle = null;
+        }
+    }
+
+    public void setCircleRadius(int newRadius) {
+        radius = newRadius;
     }
 
 }
