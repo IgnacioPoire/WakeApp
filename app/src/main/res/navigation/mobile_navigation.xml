@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_maps" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.wakeapp.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_alarms"
+        android:name="com.wakeapp.ui.alarms.AlarmsFragment"
+        android:label="@string/menu_alarms"
+        tools:layout="@layout/fragment_alarms" />
 
     <fragment
         android:id="@+id/nav_slideshow"
