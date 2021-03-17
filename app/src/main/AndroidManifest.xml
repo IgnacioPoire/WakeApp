@@ -32,6 +32,10 @@
             android:name="com.wakeapp.HelpActivity"
             android:label="@string/menu_item_help"
             android:parentActivityName="com.wakeapp.HelpActivity" />
+        <activity
+            android:name="com.wakeapp.ui.alarms.AlarmActivity"
+            android:label="Alarm Form"
+            android:parentActivityName="com.wakeapp.MainActivity" />
     </application>
 
 </manifest>

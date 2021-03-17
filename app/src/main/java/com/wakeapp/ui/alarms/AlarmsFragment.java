@@ -1,6 +1,7 @@
 package com.wakeapp.ui.alarms;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,21 +40,23 @@ public class AlarmsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
-        ListView alarmList = (ListView) rootView.findViewById(R.id.alarmList);
+        final View rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
+        ListView alarmList = rootView.findViewById(R.id.alarmList);
 
         alarmsList = new ArrayList<>();
         if (!varListener.getAlarmList().isEmpty()) {
             loadAlarms();
         }
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1, alarmsList);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getActivity().getApplicationContext(),
+                android.R.layout.simple_list_item_1, alarmsList);
         alarmList.setAdapter(arrayAdapter);
 
         alarmList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Intent intent = new Intent(getActivity(), AlarmActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -63,7 +66,7 @@ public class AlarmsFragment extends Fragment {
     private void loadAlarms() {
         ArrayList<Alarm> alarms = varListener.getAlarmList();
         for (int i = 0; i<alarms.size(); i++) {
-            alarmsList.add(alarms.get(i).getLocationName());
+            alarmsList.add(alarms.get(i).getName());
         }
     }
 }
