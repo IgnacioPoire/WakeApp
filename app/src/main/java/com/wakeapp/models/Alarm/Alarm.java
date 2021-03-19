@@ -1,8 +1,10 @@
-package com.wakeapp.models;
+package com.wakeapp.models.Alarm;
 
 import com.google.android.gms.maps.model.LatLng;
+import java.io.Serializable;
 
-public class Alarm {
+public class Alarm implements Serializable {
+    private static final long serialVersionUID = 1L;
     private boolean isEnabled;
     private String name;
     private LatLng latLng;
@@ -43,11 +45,7 @@ public class Alarm {
         return isEnabled;
     }
 
-    public void setEnabled() {
-        this.isEnabled = true;
-    }
-
-    public void setDisabled() {
-        this.isEnabled = false;
+    public void switchEnabled() {
+        this.isEnabled = !this.isEnabled;
     }
 }

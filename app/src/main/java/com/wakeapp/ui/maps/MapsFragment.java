@@ -31,7 +31,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
-import com.wakeapp.models.Alarm;
+import com.wakeapp.models.Alarm.Alarm;
 
 import java.io.IOException;
 import java.util.ArrayList;

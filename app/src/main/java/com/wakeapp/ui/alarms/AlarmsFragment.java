@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
-import com.wakeapp.models.Alarm;
+import com.wakeapp.models.Alarm.Alarm;
 import java.util.ArrayList;
 
 public class AlarmsFragment extends Fragment {

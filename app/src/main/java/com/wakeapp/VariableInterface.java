@@ -1,6 +1,6 @@
 package com.wakeapp;
 
-import com.wakeapp.models.Alarm;
+import com.wakeapp.models.Alarm.Alarm;
 import java.util.ArrayList;
 
 public interface VariableInterface {
