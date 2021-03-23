@@ -89,47 +89,72 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onResume() {
+        super.onResume();
         try {
-            //new FileOutputStream(getExternalFilesDir(null) + "/alarms.data");
-            //FileOutputStream fos = getApplicationContext().openFileOutput(getFilesDir() + "/alarms.data", Context.MODE_PRIVATE);
+            System.out.println("HERE3");
+            File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+            FileInputStream fin = new FileInputStream(alarmFile);
+            if (fin.available() != 0) {
+                ObjectInputStream is = new ObjectInputStream(fin);
+                alarms = (ArrayList<Alarm>) is.readObject();
+                is.close();
+                System.out.println("HERE4");
+            }
+            fin.close();
+            System.out.println("HERE5");
+            System.out.print("LOADED" + alarms);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            System.out.println("HERE1");
+            checkFileExists();
+            File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+            FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(alarms);
+            os.flush();
+            fos.flush();
             os.close();
             fos.close();
+            System.out.println("HERE2");
+            System.out.print("SAVED" + alarms);
         } catch (FileNotFoundException e) {
             System.out.println("No file found saveChanges");
             System.out.println(e.getMessage());
+            e.printStackTrace();
         } catch (IOException e) {
             System.out.println("IOException in SaveChanges");
             System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void checkFileExists() {
+        File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+        try {
+            alarmFile.createNewFile();
+            FileOutputStream oFile = new FileOutputStream(alarmFile, false);
+            oFile.close();
+        } catch (IOException e) {
+            System.out.println("IOException in checkFileExists");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private void loadAlarms() {
-        try {
-            //FileInputStream fin = getApplicationContext().openFileInput(getFilesDir() + "/alarms.data");
-            //FileInputStream fin =  new FileInputStream(getExternalFilesDir(null) + "/alarms.data");
-            ObjectInputStream is = new ObjectInputStream(fin);
-            alarms = (ArrayList<Alarm>) is.readObject();
-            if (alarms == null) {
-                alarms = new ArrayList<>();
-            } else {
-                System.out.println(alarms);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("No file found loadAlarms");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("IOException in loadAlarms");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            System.out.println("ClassNotFound in loadAlarms");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+        //LOAD FROM DB
+        alarms = new ArrayList<>();
     }
 }

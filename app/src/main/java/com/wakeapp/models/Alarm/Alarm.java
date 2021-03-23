@@ -7,13 +7,15 @@ public class Alarm implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean isEnabled;
     private String name;
-    private LatLng latLng;
+    private double lat;
+    private double lng;
     private double radius;
 
     public Alarm(String name, LatLng latLng, double radius) {
         this.isEnabled = true;
         this.name = name;
-        this.latLng = latLng;
+        this.lat = latLng.latitude;
+        this.lng = latLng.longitude;
         this.radius = radius;
     }
 
@@ -26,11 +28,12 @@ public class Alarm implements Serializable {
     }
 
     public LatLng getLatLng() {
-        return latLng;
+        return new LatLng(lat, lng);
     }
 
     public void setLatLng(LatLng latLng) {
-        this.latLng = latLng;
+        this.lat = latLng.latitude;
+        this.lng = latLng.longitude;
     }
 
     public double getRadius() {
