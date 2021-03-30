@@ -92,18 +92,16 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     public void onResume() {
         super.onResume();
         try {
-            System.out.println("HERE3");
+            checkFileExists();
             File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
             FileInputStream fin = new FileInputStream(alarmFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
                 alarms = (ArrayList<Alarm>) is.readObject();
                 is.close();
-                System.out.println("HERE4");
             }
             fin.close();
-            System.out.println("HERE5");
-            System.out.print("LOADED" + alarms);
+            System.out.print("LOADED " + alarms);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -117,18 +115,14 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     public void onPause() {
         super.onPause();
         try {
-            System.out.println("HERE1");
             checkFileExists();
             File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(alarms);
-            os.flush();
-            fos.flush();
             os.close();
             fos.close();
-            System.out.println("HERE2");
-            System.out.print("SAVED" + alarms);
+            System.out.print("SAVED " + alarms);
         } catch (FileNotFoundException e) {
             System.out.println("No file found saveChanges");
             System.out.println(e.getMessage());
@@ -143,9 +137,12 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private void checkFileExists() {
         File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
         try {
-            alarmFile.createNewFile();
-            FileOutputStream oFile = new FileOutputStream(alarmFile, false);
-            oFile.close();
+            if(!alarmFile.exists()) {
+                alarmFile.getParentFile().mkdirs();
+                alarmFile.createNewFile();
+                FileOutputStream oFile = new FileOutputStream(alarmFile, true);
+                oFile.close();
+            }
         } catch (IOException e) {
             System.out.println("IOException in checkFileExists");
             System.out.println(e.getMessage());

@@ -14,12 +14,15 @@ import androidx.fragment.app.Fragment;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
 import com.wakeapp.models.Alarm.Alarm;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AlarmsFragment extends Fragment {
 
     private VariableInterface varListener;
-    private ArrayList<String> alarmsList;
+    private ArrayList<Alarm> alarmsList;
+    private ArrayList<String> alarmsStrings;
 
     @Override
     public void onAttach(Context context) {
@@ -43,19 +46,21 @@ public class AlarmsFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
         ListView alarmList = rootView.findViewById(R.id.alarmList);
 
-        alarmsList = new ArrayList<>();
+        alarmsStrings = new ArrayList<>();
         if (!varListener.getAlarmList().isEmpty()) {
             loadAlarms();
         }
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(getActivity().getApplicationContext(),
-                android.R.layout.simple_list_item_1, alarmsList);
+                android.R.layout.simple_list_item_1, alarmsStrings);
         alarmList.setAdapter(arrayAdapter);
 
         alarmList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), AlarmActivity.class);
+                intent.putExtra("alarms_list", (Serializable) alarmsList);
+                intent.putExtra("ALARM_ID", position);
                 startActivity(intent);
             }
         });
@@ -64,9 +69,9 @@ public class AlarmsFragment extends Fragment {
     }
 
     private void loadAlarms() {
-        ArrayList<Alarm> alarms = varListener.getAlarmList();
-        for (int i = 0; i<alarms.size(); i++) {
-            alarmsList.add(alarms.get(i).getName());
+        alarmsList = varListener.getAlarmList();
+        for (int i = 0; i<alarmsList.size(); i++) {
+            alarmsStrings.add(alarmsList.get(i).getName());
         }
     }
 }
