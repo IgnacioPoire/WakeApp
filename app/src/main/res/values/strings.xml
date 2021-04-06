@@ -16,10 +16,9 @@
     <string name="alarm_name_input_hint">Name of the Alarm</string>
     <string name="alarm_name">Name</string>
     <string name="always_active_label">Always active</string>
-    <string name="alarm_from_label">Alarm active from:</string>
-    <string name="alarm_from_input_hint">Time from when the alarm is active</string>
-    <string name="alarm_to_label">to:</string>
-    <string name="alarm_to_input_hint">Time when the alarm should stop being active</string>
+    <string name="alarm_time_label">Start time:</string>
+    <string name="alarm_time_input_hint">Time from when the alarm is active</string>
+    <string name="alarm_interval_label">Interval time:</string>
     <!-- Other Strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

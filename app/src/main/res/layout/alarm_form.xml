@@ -36,34 +36,29 @@
         android:text="@string/always_active_label" />
 
     <TextView
-        android:id="@+id/alarm_from_label"
+        android:id="@+id/alarm_time_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alarm_from_label" />
+        android:text="@string/alarm_time_label" />
 
     <EditText
-        android:id="@+id/alarm_from"
+        android:id="@+id/alarm_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:ems="10"
-        android:hint="@string/alarm_from_input_hint"
+        android:hint="@string/alarm_time_input_hint"
         android:inputType="time"
         android:autofillHints="alarm from time" />
 
     <TextView
-        android:id="@+id/alarm_to_label"
+        android:id="@+id/alarm_interval_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alarm_to_label" />
+        android:text="@string/alarm_interval_label" />
 
-    <EditText
-        android:id="@+id/alarm_to"
+    <Spinner
+        android:id="@+id/alarm_interval"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:ems="10"
-        android:hint="@string/alarm_to_input_hint"
-        android:inputType="time"
-        android:autofillHints="alarm to time" />
+        android:layout_height="wrap_content" />
 </LinearLayout>
