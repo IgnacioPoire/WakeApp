@@ -1,15 +1,20 @@
 package com.wakeapp.ui.alarms;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
 
 import com.wakeapp.R;
 import com.wakeapp.models.Alarm.Alarm;
@@ -19,7 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AlarmActivity extends AppCompatActivity {
+public class AlarmActivity extends Fragment {
 
     private static Map<String, Long> intervals;
     static {
@@ -36,28 +41,29 @@ public class AlarmActivity extends AppCompatActivity {
     private Alarm alarm;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                                ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final View rootView = inflater.inflate(R.layout.alarm_form, container, false);
 
         alarms = (ArrayList<Alarm>) getIntent().getSerializableExtra("alarms_list");
         alarm = alarms.get(getIntent().getIntExtra("ALARM_ID", 0));
         System.out.println("\nHERE: " + alarm + " ");
 
-        setContentView(R.layout.alarm_form);
-
         //Alarm Name
-        EditText alarmName = findViewById(R.id.alarm_name);
+        EditText alarmName = rootView.findViewById(R.id.alarm_name);
         alarmName.setText(alarm.getName());
 
         //Always Active
-        SwitchCompat alwaysActive = findViewById(R.id.always_active);
+        SwitchCompat alwaysActive = rootView.findViewById(R.id.always_active);
         alwaysActive.setChecked(alarm.getAlwaysActive());
 
         //Time
-        final TextView alarmTimeLabel = findViewById(R.id.alarm_time_label);
-        final EditText alarmTime = findViewById(R.id.alarm_time);
-        final TextView alarmIntervalLabel = findViewById(R.id.alarm_interval_label);
-        final Spinner alarmInterval = findViewById(R.id.alarm_interval);
+        final TextView alarmTimeLabel = rootView.findViewById(R.id.alarm_time_label);
+        final EditText alarmTime = rootView.findViewById(R.id.alarm_time);
+        final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
+        final Spinner alarmInterval = rootView.findViewById(R.id.alarm_interval);
         alarmTime.setText(alarm.getTime().toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, new ArrayList<>(intervals.keySet()));
@@ -87,5 +93,7 @@ public class AlarmActivity extends AppCompatActivity {
                 }
             }
         });
+
+        return rootView;
     }
 }
