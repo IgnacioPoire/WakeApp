@@ -33,7 +33,11 @@ import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
 import com.wakeapp.models.Alarm.Alarm;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -143,6 +147,24 @@ public class MapsFragment extends Fragment {
                     e.printStackTrace();
                 }
                 varListener.getAlarmList().add(new Alarm(addresses.get(0).getAddressLine(0), marker.getPosition(), circle.getRadius()));
+                try {
+                    checkFileExists();
+                    File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+                    FileOutputStream fos = new FileOutputStream(alarmFile);
+                    ObjectOutputStream os = new ObjectOutputStream(fos);
+                    os.writeObject(varListener.getAlarmList());
+                    os.close();
+                    fos.close();
+                    System.out.print("SAVED " +  varListener.getAlarmList());
+                } catch (FileNotFoundException e) {
+                    System.out.println("No file found saveChanges");
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.out.println("IOException in SaveChanges");
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
                 searchButton.show();
                 radiusBar.setVisibility(View.GONE);
             }
@@ -249,5 +271,21 @@ public class MapsFragment extends Fragment {
             circle.remove();
             circle = null;
         }*/
+    }
+
+    private void checkFileExists() {
+        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+        try {
+            if(!alarmFile.exists()) {
+                alarmFile.getParentFile().mkdirs();
+                alarmFile.createNewFile();
+                FileOutputStream oFile = new FileOutputStream(alarmFile, true);
+                oFile.close();
+            }
+        } catch (IOException e) {
+            System.out.println("IOException in checkFileExists");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
