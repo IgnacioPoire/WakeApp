@@ -8,6 +8,7 @@
     <string name="helpText">Help text</string>
     <!-- Side Menu Strings -->
     <string name="menu_maps">Map</string>
+    <string name="menu_alarm">Alarm</string>
     <string name="menu_alarms">Alarms</string>
     <string name="menu_slideshow">Slideshow</string>
     <!-- Alarm Form Strings -->

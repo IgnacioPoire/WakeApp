@@ -15,7 +15,21 @@
         android:id="@+id/nav_alarms"
         android:name="com.wakeapp.ui.alarms.AlarmsFragment"
         android:label="@string/menu_alarms"
-        tools:layout="@layout/fragment_alarms" />
+        tools:layout="@layout/fragment_alarms" >
+        <action
+            android:id="@+id/action_nav_alarms_to_nav_alarm"
+            app:destination="@id/nav_alarm" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_alarm"
+        android:name="com.wakeapp.ui.alarms.AlarmFragment"
+        android:label="@string/menu_alarm"
+        tools:layout="@layout/fragment_alarm" >
+        <action
+            android:id="@+id/action_nav_alarm_to_nav_alarms"
+            app:destination="@id/nav_alarms" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_slideshow"

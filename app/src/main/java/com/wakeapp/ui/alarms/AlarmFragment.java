@@ -1,6 +1,5 @@
 package com.wakeapp.ui.alarms;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -45,11 +43,10 @@ public class AlarmFragment extends Fragment {
                                 ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final View rootView = inflater.inflate(R.layout.alarm_form, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_alarm, container, false);
 
-        Bundle bundle = this.getArguments();
-        alarms = (ArrayList<Alarm>) bundle.getSerializable("alarms_list");
-        alarm = alarms.get(bundle.getInt("ALARM_ID", 0));
+        alarms = (ArrayList<Alarm>) getArguments().getSerializable("alarms_list");
+        alarm = alarms.get(getArguments().getInt("ALARM_ID", 0));
         System.out.println("\nHERE: " + alarm + " ");
 
         //Alarm Name
