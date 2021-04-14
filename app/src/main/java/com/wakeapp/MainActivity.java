@@ -1,11 +1,15 @@
 package com.wakeapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.Alarm.Alarm;
+import com.wakeapp.ui.alarms.AlarmsFragment;
+
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -28,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     private AppBarConfiguration mAppBarConfiguration;
     private ArrayList<Alarm> alarms;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 R.id.nav_maps, R.id.nav_alarms, R.id.nav_slideshow)
                 .setOpenableLayout(drawer)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }

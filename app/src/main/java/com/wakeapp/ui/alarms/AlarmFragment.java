@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AlarmActivity extends Fragment {
+public class AlarmFragment extends Fragment {
 
     private static Map<String, Long> intervals;
     static {
@@ -47,8 +47,9 @@ public class AlarmActivity extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.alarm_form, container, false);
 
-        alarms = (ArrayList<Alarm>) getIntent().getSerializableExtra("alarms_list");
-        alarm = alarms.get(getIntent().getIntExtra("ALARM_ID", 0));
+        Bundle bundle = this.getArguments();
+        alarms = (ArrayList<Alarm>) bundle.getSerializable("alarms_list");
+        alarm = alarms.get(bundle.getInt("ALARM_ID", 0));
         System.out.println("\nHERE: " + alarm + " ");
 
         //Alarm Name
@@ -65,7 +66,7 @@ public class AlarmActivity extends Fragment {
         final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
         final Spinner alarmInterval = rootView.findViewById(R.id.alarm_interval);
         alarmTime.setText(alarm.getTime().toString());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(),
                 android.R.layout.simple_spinner_item, new ArrayList<>(intervals.keySet()));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         alarmInterval.setAdapter(adapter);
