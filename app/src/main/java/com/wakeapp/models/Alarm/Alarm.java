@@ -7,7 +7,8 @@ import java.sql.Time;
 public class Alarm implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean isEnabled;
-    private boolean alwaysActive;
+    private boolean timeActive;
+    private boolean daysActive;
     private String name;
     private double lat;
     private double lng;
@@ -18,7 +19,8 @@ public class Alarm implements Serializable {
 
     public Alarm(String name, LatLng latLng, double radius) {
         this.isEnabled = true;
-        this.alwaysActive = true;
+        this.timeActive = true;
+        this.daysActive = true;
         this.name = name;
         this.lat = latLng.latitude;
         this.lng = latLng.longitude;
@@ -60,12 +62,20 @@ public class Alarm implements Serializable {
         this.isEnabled = value;
     }
 
-    public boolean getAlwaysActive() {
-        return this.alwaysActive;
+    public boolean getTimeActive() {
+        return this.timeActive;
     }
 
-    public void setAlwaysActive(boolean value) {
-        this.alwaysActive = value;
+    public void setTimeActive(boolean value) {
+        this.timeActive = value;
+    }
+
+    public boolean getDaysActive() {
+        return this.daysActive;
+    }
+
+    public void setDaysActive(boolean value) {
+        this.daysActive = value;
     }
 
     public Time getTime() {

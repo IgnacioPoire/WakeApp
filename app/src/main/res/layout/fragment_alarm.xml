@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
     android:layout_marginStart="12dp"
     android:layout_marginLeft="12dp"
     android:layout_marginTop="12dp"
     android:layout_marginEnd="12dp"
     android:layout_marginRight="12dp"
-    android:layout_marginBottom="6dp"
+    android:layout_marginBottom="12dp"
     android:orientation="vertical">
 
     <TextView
@@ -27,13 +28,20 @@
         android:inputType="textPersonName"
         android:text="@string/alarm_name" />
 
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="12dp"
+        android:background="?android:attr/listDivider" />
+
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/always_active"
+        android:id="@+id/all_time_active"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/alarm_active_hint"
         android:layout_marginBottom="12dp"
-        android:text="@string/always_active_label" />
+        android:hint="@string/all_time_active_hint"
+        android:text="@string/all_time_active_label" />
 
     <TextView
         android:id="@+id/alarm_time_label"
@@ -46,10 +54,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
+        android:autofillHints="alarm from time"
         android:ems="10"
         android:hint="@string/alarm_time_input_hint"
-        android:inputType="time"
-        android:autofillHints="alarm from time" />
+        android:inputType="time" />
 
     <TextView
         android:id="@+id/alarm_interval_label"
@@ -61,4 +69,29 @@
         android:id="@+id/alarm_interval"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="?android:attr/listDivider" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/all_days_active"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:hint="@string/all_days_active_hint"
+        android:text="@string/all_days_active_label" />
+
+    <include
+        android:id="@+id/daypicker"
+        layout="@layout/daypicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+
+
 </LinearLayout>

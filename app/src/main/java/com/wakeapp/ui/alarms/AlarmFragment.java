@@ -9,6 +9,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
@@ -53,9 +54,9 @@ public class AlarmFragment extends Fragment {
         EditText alarmName = rootView.findViewById(R.id.alarm_name);
         alarmName.setText(alarm.getName());
 
-        //Always Active
-        SwitchCompat alwaysActive = rootView.findViewById(R.id.always_active);
-        alwaysActive.setChecked(alarm.getAlwaysActive());
+        //All Time Active
+        SwitchCompat allTimeActive = rootView.findViewById(R.id.all_time_active);
+        allTimeActive.setChecked(alarm.getTimeActive());
 
         //Time
         final TextView alarmTimeLabel = rootView.findViewById(R.id.alarm_time_label);
@@ -68,14 +69,14 @@ public class AlarmFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         alarmInterval.setAdapter(adapter);
 
-        if (alwaysActive.isChecked()) {
+        if (allTimeActive.isChecked()) {
             alarmTimeLabel.setVisibility(View.GONE);
             alarmTime.setVisibility(View.GONE);
             alarmIntervalLabel.setVisibility(View.GONE);
             alarmInterval.setVisibility(View.GONE);
         }
 
-        alwaysActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
+        allTimeActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -88,6 +89,52 @@ public class AlarmFragment extends Fragment {
                     alarmTime.setVisibility(View.VISIBLE);
                     alarmIntervalLabel.setVisibility(View.VISIBLE);
                     alarmInterval.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        //All Days Active
+
+        SwitchCompat allDaysActive = rootView.findViewById(R.id.all_days_active);
+        allDaysActive.setChecked(alarm.getDaysActive());
+
+        final ToggleButton tSun = (ToggleButton) rootView.findViewById(R.id.tSun);
+        final ToggleButton tMon = (ToggleButton) rootView.findViewById(R.id.tMon);
+        final ToggleButton tTue = (ToggleButton) rootView.findViewById(R.id.tTue);
+        final ToggleButton tWed = (ToggleButton) rootView.findViewById(R.id.tWed);
+        final ToggleButton tThu = (ToggleButton) rootView.findViewById(R.id.tThu);
+        final ToggleButton tFri = (ToggleButton) rootView.findViewById(R.id.tFri);
+        final ToggleButton tSat = (ToggleButton) rootView.findViewById(R.id.tSat);
+
+        if (allDaysActive.isChecked()) {
+            tSun.setVisibility(View.GONE);
+            tMon.setVisibility(View.GONE);
+            tTue.setVisibility(View.GONE);
+            tWed.setVisibility(View.GONE);
+            tThu.setVisibility(View.GONE);
+            tFri.setVisibility(View.GONE);
+            tSat.setVisibility(View.GONE);
+        }
+
+        allDaysActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    tSun.setVisibility(View.GONE);
+                    tMon.setVisibility(View.GONE);
+                    tTue.setVisibility(View.GONE);
+                    tWed.setVisibility(View.GONE);
+                    tThu.setVisibility(View.GONE);
+                    tFri.setVisibility(View.GONE);
+                    tSat.setVisibility(View.GONE);
+                } else {
+                    tSun.setVisibility(View.VISIBLE);
+                    tMon.setVisibility(View.VISIBLE);
+                    tTue.setVisibility(View.VISIBLE);
+                    tWed.setVisibility(View.VISIBLE);
+                    tThu.setVisibility(View.VISIBLE);
+                    tFri.setVisibility(View.VISIBLE);
+                    tSat.setVisibility(View.VISIBLE);
                 }
             }
         });
