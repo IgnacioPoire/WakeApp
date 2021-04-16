@@ -1,15 +1,12 @@
 package com.wakeapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.Alarm.Alarm;
-import com.wakeapp.ui.alarms.AlarmsFragment;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -25,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements VariableInterface {
@@ -111,29 +107,6 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        try {
-            checkFileExists();
-            File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
-            FileOutputStream fos = new FileOutputStream(alarmFile);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(alarms);
-            os.close();
-            fos.close();
-            System.out.print("SAVED " + alarms);
-        } catch (FileNotFoundException e) {
-            System.out.println("No file found saveChanges");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("IOException in SaveChanges");
-            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }

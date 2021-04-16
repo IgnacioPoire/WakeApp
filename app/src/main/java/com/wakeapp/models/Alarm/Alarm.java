@@ -3,9 +3,13 @@ package com.wakeapp.models.Alarm;
 import com.google.android.gms.maps.model.LatLng;
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Alarm implements Serializable {
     private static final long serialVersionUID = 1L;
+
     private boolean isEnabled;
     private boolean timeActive;
     private boolean daysActive;
@@ -16,6 +20,7 @@ public class Alarm implements Serializable {
     private Time time;
     private long interval;
     private long endTime;
+    private ArrayList<Boolean> days;
 
     public Alarm(String name, LatLng latLng, double radius) {
         this.isEnabled = true;
@@ -27,6 +32,8 @@ public class Alarm implements Serializable {
         this.radius = radius;
         this.time = new Time(43200000);
         this.endTime = 0;
+        this.days = new ArrayList<>(Arrays.asList(new Boolean[7]));
+        Collections.fill(this.days, Boolean.TRUE);
     }
 
     public String getName() {
@@ -86,11 +93,22 @@ public class Alarm implements Serializable {
         this.time = new Time(value);
     }
 
-    public Time getInterval() {
-        return this.time;
+    public long getInterval() {
+        return this.interval;
     }
 
     public void setInterval(long value) {
-        this.endTime = this.time.getTime() + interval;
+        this.interval = value;
+        this.endTime = this.time.getTime() + this.interval;
+    }
+
+    public long getEndtime() { return this.endTime; }
+
+    public void setDays(int id, boolean value) {
+        this.days.set(id, value);
+    }
+
+    public ArrayList<Boolean> getDays() {
+        return this.days;
     }
 }

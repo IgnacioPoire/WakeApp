@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -12,8 +14,11 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.wakeapp.R;
 import com.wakeapp.models.Alarm.Alarm;
@@ -25,14 +30,14 @@ import java.util.Map;
 
 public class AlarmFragment extends Fragment {
 
-    private static Map<String, Long> intervals;
+    private static Map<Integer, String> intervals;
     static {
-        Map<String, Long> aMap = new HashMap<>();
-        aMap.put("30 Min", 1800000L);
-        aMap.put("1 Hour", 3600000L);
-        aMap.put("2 Hour", 7200000L);
-        aMap.put("3 Hour", 10800000L);
-        aMap.put("6 Hour", 21600000L);
+        Map<Integer, String> aMap = new HashMap<>();
+        aMap.put(1, "30 Min");
+        aMap.put(2, "1 Hour");
+        aMap.put(4, "2 Hours");
+        aMap.put(6, "3 Hours");
+        aMap.put(12, "6 Hours");
         intervals = Collections.unmodifiableMap(aMap);
     }
 
@@ -65,7 +70,7 @@ public class AlarmFragment extends Fragment {
         final Spinner alarmInterval = rootView.findViewById(R.id.alarm_interval);
         alarmTime.setText(alarm.getTime().toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(),
-                android.R.layout.simple_spinner_item, new ArrayList<>(intervals.keySet()));
+                android.R.layout.simple_spinner_item, new ArrayList<>(intervals.values()));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         alarmInterval.setAdapter(adapter);
 
@@ -99,12 +104,19 @@ public class AlarmFragment extends Fragment {
         allDaysActive.setChecked(alarm.getDaysActive());
 
         final ToggleButton tSun = (ToggleButton) rootView.findViewById(R.id.tSun);
+        tSun.setChecked(alarm.getDays().get(0));
         final ToggleButton tMon = (ToggleButton) rootView.findViewById(R.id.tMon);
+        tMon.setChecked(alarm.getDays().get(1));
         final ToggleButton tTue = (ToggleButton) rootView.findViewById(R.id.tTue);
+        tTue.setChecked(alarm.getDays().get(2));
         final ToggleButton tWed = (ToggleButton) rootView.findViewById(R.id.tWed);
+        tWed.setChecked(alarm.getDays().get(3));
         final ToggleButton tThu = (ToggleButton) rootView.findViewById(R.id.tThu);
+        tThu.setChecked(alarm.getDays().get(4));
         final ToggleButton tFri = (ToggleButton) rootView.findViewById(R.id.tFri);
+        tFri.setChecked(alarm.getDays().get(5));
         final ToggleButton tSat = (ToggleButton) rootView.findViewById(R.id.tSat);
+        tSat.setChecked(alarm.getDays().get(6));
 
         if (allDaysActive.isChecked()) {
             tSun.setVisibility(View.GONE);
@@ -140,5 +152,27 @@ public class AlarmFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final Button save = (Button) view.findViewById(R.id.save_button);
+        final NavController navController = Navigation.findNavController(view);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveAlarm();
+                navController.navigate(R.id.nav_alarms);
+            }
+        });
+    }
+
+    private long intervalMultiplier(final int selected) {
+        return selected * 1800000L;
+    }
+
+    private void saveAlarm() {
+
     }
 }
