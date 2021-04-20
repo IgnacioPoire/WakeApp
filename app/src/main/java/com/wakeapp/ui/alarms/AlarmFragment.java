@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -23,6 +22,11 @@ import androidx.navigation.Navigation;
 import com.wakeapp.R;
 import com.wakeapp.models.Alarm.Alarm;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,9 +44,32 @@ public class AlarmFragment extends Fragment {
         aMap.put(12, "6 Hours");
         intervals = Collections.unmodifiableMap(aMap);
     }
+    private static Map<Integer, Integer> selectionPos;
+    static {
+        Map<Integer, Integer> aMap = new HashMap<>();
+        aMap.put(1, 1);
+        aMap.put(2, 2);
+        aMap.put(4, 3);
+        aMap.put(6, 4);
+        aMap.put(12,5);
+        selectionPos = Collections.unmodifiableMap(aMap);
+    }
 
     private ArrayList<Alarm> alarms;
     private Alarm alarm;
+    private EditText alarmName;
+    private SwitchCompat timeActive;
+    private SwitchCompat daysActive;
+    private EditText alarmTime;
+    private Spinner alarmInterval;
+
+    private ToggleButton tSun;
+    private ToggleButton tMon;
+    private ToggleButton tTue;
+    private ToggleButton tWed;
+    private ToggleButton tThu;
+    private ToggleButton tFri;
+    private ToggleButton tSat;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,32 +83,35 @@ public class AlarmFragment extends Fragment {
         System.out.println("\nHERE: " + alarm + " ");
 
         //Alarm Name
-        EditText alarmName = rootView.findViewById(R.id.alarm_name);
+        alarmName = rootView.findViewById(R.id.alarm_name);
         alarmName.setText(alarm.getName());
 
         //All Time Active
-        SwitchCompat allTimeActive = rootView.findViewById(R.id.all_time_active);
-        allTimeActive.setChecked(alarm.getTimeActive());
+        timeActive = rootView.findViewById(R.id.all_time_active);
+        timeActive.setChecked(alarm.getTimeActive());
 
         //Time
         final TextView alarmTimeLabel = rootView.findViewById(R.id.alarm_time_label);
-        final EditText alarmTime = rootView.findViewById(R.id.alarm_time);
+        alarmTime = rootView.findViewById(R.id.alarm_time);
         final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
-        final Spinner alarmInterval = rootView.findViewById(R.id.alarm_interval);
+        alarmInterval = rootView.findViewById(R.id.alarm_interval);
         alarmTime.setText(alarm.getTime().toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(),
                 android.R.layout.simple_spinner_item, new ArrayList<>(intervals.values()));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         alarmInterval.setAdapter(adapter);
+        if (alarm.getInterval() != 0) {
+            //alarmInterval.setSelection(selectionPos.get(alarm.getInterval()/1800000L));
+        }
 
-        if (allTimeActive.isChecked()) {
+        if (timeActive.isChecked()) {
             alarmTimeLabel.setVisibility(View.GONE);
             alarmTime.setVisibility(View.GONE);
             alarmIntervalLabel.setVisibility(View.GONE);
             alarmInterval.setVisibility(View.GONE);
         }
 
-        allTimeActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
+        timeActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -100,25 +130,25 @@ public class AlarmFragment extends Fragment {
 
         //All Days Active
 
-        SwitchCompat allDaysActive = rootView.findViewById(R.id.all_days_active);
-        allDaysActive.setChecked(alarm.getDaysActive());
+        daysActive = rootView.findViewById(R.id.all_days_active);
+        daysActive.setChecked(alarm.getDaysActive());
 
-        final ToggleButton tSun = (ToggleButton) rootView.findViewById(R.id.tSun);
+        tSun = (ToggleButton) rootView.findViewById(R.id.tSun);
         tSun.setChecked(alarm.getDays().get(0));
-        final ToggleButton tMon = (ToggleButton) rootView.findViewById(R.id.tMon);
+        tMon = (ToggleButton) rootView.findViewById(R.id.tMon);
         tMon.setChecked(alarm.getDays().get(1));
-        final ToggleButton tTue = (ToggleButton) rootView.findViewById(R.id.tTue);
+        tTue = (ToggleButton) rootView.findViewById(R.id.tTue);
         tTue.setChecked(alarm.getDays().get(2));
-        final ToggleButton tWed = (ToggleButton) rootView.findViewById(R.id.tWed);
+        tWed = (ToggleButton) rootView.findViewById(R.id.tWed);
         tWed.setChecked(alarm.getDays().get(3));
-        final ToggleButton tThu = (ToggleButton) rootView.findViewById(R.id.tThu);
+        tThu = (ToggleButton) rootView.findViewById(R.id.tThu);
         tThu.setChecked(alarm.getDays().get(4));
-        final ToggleButton tFri = (ToggleButton) rootView.findViewById(R.id.tFri);
+        tFri = (ToggleButton) rootView.findViewById(R.id.tFri);
         tFri.setChecked(alarm.getDays().get(5));
-        final ToggleButton tSat = (ToggleButton) rootView.findViewById(R.id.tSat);
+        tSat = (ToggleButton) rootView.findViewById(R.id.tSat);
         tSat.setChecked(alarm.getDays().get(6));
 
-        if (allDaysActive.isChecked()) {
+        if (daysActive.isChecked()) {
             tSun.setVisibility(View.GONE);
             tMon.setVisibility(View.GONE);
             tTue.setVisibility(View.GONE);
@@ -128,7 +158,7 @@ public class AlarmFragment extends Fragment {
             tSat.setVisibility(View.GONE);
         }
 
-        allDaysActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
+        daysActive.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -168,11 +198,70 @@ public class AlarmFragment extends Fragment {
         });
     }
 
-    private long intervalMultiplier(final int selected) {
-        return selected * 1800000L;
+    private void saveAlarm() {
+        alarm.setName(alarmName.getText().toString());
+        alarm.setTimeActive(timeActive.isChecked());
+        if (!(timeActive.isChecked())) {
+            Long time = java.sql.Time.valueOf(alarmTime.getText().toString()).getTime();
+            alarm.setTime(time);
+            alarm.setInterval(getKeyFromValue(alarmInterval.getSelectedItem().toString()) * 1800000L);
+        }
+        alarm.setDaysActive(daysActive.isChecked());
+        if (!(daysActive.isChecked())) {
+            alarm.setDays(0, tSun.isChecked());
+            alarm.setDays(1, tMon.isChecked());
+            alarm.setDays(2, tTue.isChecked());
+            alarm.setDays(3, tWed.isChecked());
+            alarm.setDays(4, tThu.isChecked());
+            alarm.setDays(5, tFri.isChecked());
+            alarm.setDays(6, tSat.isChecked());
+        }
+
+        alarms.set(getArguments().getInt("ALARM_ID", 0), alarm);
+        try {
+            checkFileExists();
+            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+            FileOutputStream fos = new FileOutputStream(alarmFile);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(alarms);
+            os.close();
+            fos.close();
+            System.out.print("SAVED " +  alarms);
+        } catch (FileNotFoundException e) {
+            System.out.println("No file found saveChanges");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("IOException in SaveChanges");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    private void saveAlarm() {
+    private Integer getKeyFromValue(String value) {
+        for(Map.Entry<Integer, String> entry: intervals.entrySet()) {
 
+            if(value.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+
+        return 0;
+    }
+
+    private void checkFileExists() {
+        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+        try {
+            if(!alarmFile.exists()) {
+                alarmFile.getParentFile().mkdirs();
+                alarmFile.createNewFile();
+                FileOutputStream oFile = new FileOutputStream(alarmFile, true);
+                oFile.close();
+            }
+        } catch (IOException e) {
+            System.out.println("IOException in checkFileExists");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
