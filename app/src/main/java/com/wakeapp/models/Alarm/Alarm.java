@@ -18,7 +18,7 @@ public class Alarm implements Serializable {
     private double lng;
     private double radius;
     private Time time;
-    private long interval;
+    private int interval;
     private long endTime;
     private ArrayList<Boolean> days;
 
@@ -94,16 +94,17 @@ public class Alarm implements Serializable {
         this.time = new Time(value);
     }
 
-    public long getInterval() {
+    public int getInterval() {
         return this.interval;
     }
 
-    public void setInterval(long value) {
+    public void setInterval(int value) {
         this.interval = value;
-        if (this.time.getTime() + this.interval >= 86400000L) {
-            this.endTime = this.time.getTime() + this.interval - 86400000L;
+        long intervalValue = interval * 1800000L;
+        if (this.time.getTime() + intervalValue >= 86400000L) {
+            this.endTime = this.time.getTime() + intervalValue - 86400000L;
         } else {
-            this.endTime = this.time.getTime() + this.interval;
+            this.endTime = this.time.getTime() + intervalValue;
         }
     }
 

@@ -44,15 +44,16 @@ public class AlarmFragment extends Fragment {
         aMap.put(12, "6 Hours");
         intervals = Collections.unmodifiableMap(aMap);
     }
-    private static Map<Integer, Integer> selectionPos;
+
+    private static Map<Integer, Integer> intervalPos;
     static {
         Map<Integer, Integer> aMap = new HashMap<>();
         aMap.put(1, 1);
         aMap.put(2, 2);
         aMap.put(4, 3);
         aMap.put(6, 4);
-        aMap.put(12,5);
-        selectionPos = Collections.unmodifiableMap(aMap);
+        aMap.put(12, 5);
+        intervalPos = Collections.unmodifiableMap(aMap);
     }
 
     private ArrayList<Alarm> alarms;
@@ -101,7 +102,7 @@ public class AlarmFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         alarmInterval.setAdapter(adapter);
         if (alarm.getInterval() != 0) {
-            //alarmInterval.setSelection(selectionPos.get(alarm.getInterval()/1800000L));
+            alarmInterval.setSelection(intervalPos.get(alarm.getInterval()));
         }
 
         if (timeActive.isChecked()) {
@@ -204,7 +205,7 @@ public class AlarmFragment extends Fragment {
         if (!(timeActive.isChecked())) {
             Long time = java.sql.Time.valueOf(alarmTime.getText().toString()).getTime();
             alarm.setTime(time);
-            alarm.setInterval(getKeyFromValue(alarmInterval.getSelectedItem().toString()) * 1800000L);
+            alarm.setInterval(getKeyFromValue(alarmInterval.getSelectedItem().toString()));
         }
         alarm.setDaysActive(daysActive.isChecked());
         if (!(daysActive.isChecked())) {
