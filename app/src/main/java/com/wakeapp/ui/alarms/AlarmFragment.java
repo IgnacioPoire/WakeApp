@@ -48,11 +48,11 @@ public class AlarmFragment extends Fragment {
     private static Map<Integer, Integer> intervalPos;
     static {
         Map<Integer, Integer> aMap = new HashMap<>();
-        aMap.put(1, 1);
-        aMap.put(2, 2);
-        aMap.put(4, 3);
-        aMap.put(6, 4);
-        aMap.put(12, 5);
+        aMap.put(1, 0);
+        aMap.put(2, 1);
+        aMap.put(4, 2);
+        aMap.put(6, 3);
+        aMap.put(12, 4);
         intervalPos = Collections.unmodifiableMap(aMap);
     }
 
