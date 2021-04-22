@@ -1,6 +1,8 @@
 package com.wakeapp;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         loadAlarms();
         setContentView(R.layout.activity_main);
         checkPermission();
+        startAlarmListener();
     }
 
     private void permissionsGranted() {
@@ -189,5 +192,18 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private void loadAlarms() {
         //LOAD FROM DB
         alarms = new ArrayList<>();
+    }
+
+    private void startAlarmListener() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (AlarmListener.class.getName().equals(service.service.getClassName())) {
+                System.out.println("Listener running");
+                return;
+            }
+        }
+        Intent listener = new Intent(this, AlarmListener.class);
+        startService(listener);
+        System.out.println("Listener started");
     }
 }
