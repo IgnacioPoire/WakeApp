@@ -55,9 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:autofillHints="alarm from time"
-        android:ems="10"
-        android:hint="@string/alarm_time_input_hint"
-        android:inputType="time" />
+        android:hint="@string/alarm_time_input_hint" />
 
     <TextView
         android:id="@+id/alarm_interval_label"

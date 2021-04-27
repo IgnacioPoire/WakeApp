@@ -1,5 +1,7 @@
 package com.wakeapp.ui.alarms;
 
+import android.annotation.SuppressLint;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -62,6 +65,7 @@ public class AlarmFragment extends Fragment {
     private SwitchCompat timeActive;
     private SwitchCompat daysActive;
     private EditText alarmTime;
+    private TimePickerDialog timePickerDialog;
     private Spinner alarmInterval;
 
     private ToggleButton tSun;
@@ -72,6 +76,7 @@ public class AlarmFragment extends Fragment {
     private ToggleButton tFri;
     private ToggleButton tSat;
 
+    @SuppressLint("DefaultLocale")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                                 ViewGroup container, Bundle savedInstanceState) {
@@ -94,9 +99,23 @@ public class AlarmFragment extends Fragment {
         //Time
         final TextView alarmTimeLabel = rootView.findViewById(R.id.alarm_time_label);
         alarmTime = rootView.findViewById(R.id.alarm_time);
+        alarmTime.setText(String.format("%02d:%02d", alarm.getHour(), alarm.getMinutes()));
+        alarmTime.setFocusable(false);
+        alarmTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                    @SuppressLint("DefaultLocale")
+                    @Override
+                    public void onTimeSet(TimePicker view, int hours, int minutes) {
+                        alarmTime.setText(String.format("%02d:%02d", hours, minutes));
+                    }
+                }, 0, 0, true);
+                timePickerDialog.show();
+            }
+        });
         final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
         alarmInterval = rootView.findViewById(R.id.alarm_interval);
-        alarmTime.setText(alarm.getTime().toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(),
                 android.R.layout.simple_spinner_item, new ArrayList<>(intervals.values()));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -203,9 +222,11 @@ public class AlarmFragment extends Fragment {
         alarm.setName(alarmName.getText().toString());
         alarm.setTimeActive(timeActive.isChecked());
         if (!(timeActive.isChecked())) {
-            Long time = java.sql.Time.valueOf(alarmTime.getText().toString()).getTime();
-            alarm.setTime(time);
+            String[] time = alarmTime.getText().toString().split(":");
+            alarm.setHour(Integer.parseInt(time[0]));
+            alarm.setMinutes(Integer.parseInt(time[1]));
             alarm.setInterval(getKeyFromValue(alarmInterval.getSelectedItem().toString()));
+            System.out.println("EndTime: " + alarm.getEndHour() + ":" + alarm.getEndMinutes());
         }
         alarm.setDaysActive(daysActive.isChecked());
         if (!(daysActive.isChecked())) {

@@ -17,9 +17,11 @@ public class Alarm implements Serializable {
     private double lat;
     private double lng;
     private double radius;
-    private Time time;
+    private int timeHour;
+    private int timeMinutes;
     private int interval;
-    private long endTime;
+    private int endTimeHour;
+    private int endTimeMinutes;
     private ArrayList<Boolean> days;
 
     public Alarm(String name, LatLng latLng, double radius) {
@@ -30,9 +32,11 @@ public class Alarm implements Serializable {
         this.lat = latLng.latitude;
         this.lng = latLng.longitude;
         this.radius = radius;
-        this.time = new Time(43200000);
+        this.timeHour = 12;
+        this.timeMinutes = 0;
         this.interval = 0;
-        this.endTime = 0;
+        this.endTimeHour = 0;
+        this.endTimeMinutes = 0;
         this.days = new ArrayList<>(Arrays.asList(new Boolean[7]));
         Collections.fill(this.days, Boolean.TRUE);
     }
@@ -86,13 +90,17 @@ public class Alarm implements Serializable {
         this.daysActive = value;
     }
 
-    public Time getTime() {
-        return this.time;
+    public int getHour() {
+        return this.timeHour;
     }
 
-    public void setTime(long value) {
-        this.time = new Time(value);
+    public void setHour(int value) { this.timeHour = value; }
+
+    public int getMinutes() {
+        return this.timeMinutes;
     }
+
+    public void setMinutes(int value) { this.timeMinutes = value; }
 
     public int getInterval() {
         return this.interval;
@@ -100,15 +108,20 @@ public class Alarm implements Serializable {
 
     public void setInterval(int value) {
         this.interval = value;
-        long intervalValue = interval * 1800000L;
-        if (this.time.getTime() + intervalValue >= 86400000L) {
-            this.endTime = this.time.getTime() + intervalValue - 86400000L;
-        } else {
-            this.endTime = this.time.getTime() + intervalValue;
+        int hours = 0;
+        int minutesSum = this.timeMinutes + interval * 30;
+        while (minutesSum >= 60) {
+            hours++;
+            minutesSum = minutesSum - 60;
         }
+        int hoursSum = this.timeHour + hours;
+        this.endTimeHour = hoursSum >= 24 ? hoursSum - 24 : hoursSum;
+        this.endTimeMinutes = minutesSum;
     }
 
-    public long getEndtime() { return this.endTime; }
+    public int getEndHour() { return this.endTimeHour; }
+
+    public int getEndMinutes() { return this.endTimeMinutes; }
 
     public void setDays(int id, boolean value) {
         this.days.set(id, value);
