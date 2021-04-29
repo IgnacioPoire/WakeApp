@@ -16,14 +16,14 @@ import androidx.navigation.Navigation;
 
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
-import com.wakeapp.models.Alarm.Alarm;
+import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.util.ArrayList;
 
 public class AlarmsFragment extends Fragment {
 
     private VariableInterface varListener;
-    private ArrayList<Alarm> alarmsList;
+    private ArrayList<GeoAlarm> alarmsList;
     private ListView alarmList;
     private ArrayList<String> alarmsStrings;
 

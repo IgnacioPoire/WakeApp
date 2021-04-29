@@ -1,13 +1,12 @@
-package com.wakeapp.models.Alarm;
+package com.wakeapp.models.alarms;
 
 import com.google.android.gms.maps.model.LatLng;
 import java.io.Serializable;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Alarm implements Serializable {
+public class GeoAlarm implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private boolean isEnabled;
@@ -24,7 +23,7 @@ public class Alarm implements Serializable {
     private int endTimeMinutes;
     private ArrayList<Boolean> days;
 
-    public Alarm(String name, LatLng latLng, double radius) {
+    public GeoAlarm(String name, LatLng latLng, double radius) {
         this.isEnabled = true;
         this.timeActive = true;
         this.daysActive = true;

@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.wakeapp.models.Alarm.Alarm;
+import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class AlarmListener extends Service implements LocationListener {
-    private ArrayList<Alarm> activeAlarms;
+    private ArrayList<GeoAlarm> activeGeoAlarms;
 
     boolean isGPSEnable = false;
     boolean isNetworkEnable = false;
@@ -78,13 +78,13 @@ public class AlarmListener extends Service implements LocationListener {
     }
 
 
-    public void addActiveAlarm(Alarm alarm) {
-        activeAlarms.add(alarm);
+    public void addActiveAlarm(GeoAlarm geoAlarm) {
+        activeGeoAlarms.add(geoAlarm);
     }
 
-    public void removeActiveAlarm(Alarm alarm) {
-        int i = activeAlarms.indexOf(alarm);
-        activeAlarms.remove(i);
+    public void removeActiveAlarm(GeoAlarm geoAlarm) {
+        int i = activeGeoAlarms.indexOf(geoAlarm);
+        activeGeoAlarms.remove(i);
     }
 
     public void waitForInteraction() {
@@ -94,8 +94,8 @@ public class AlarmListener extends Service implements LocationListener {
          * BEHAVIOR: Constantly calculates the distance between the alarm radius and the actual user position. When the distance is less or equal than the radius, a new push notification will ring!
          */
 
-        for (int i = 0; i < activeAlarms.size(); i++) {
-            LatLng alarmLatLng = activeAlarms.get(i).getLatLng();
+        for (int i = 0; i < activeGeoAlarms.size(); i++) {
+            LatLng alarmLatLng = activeGeoAlarms.get(i).getLatLng();
             //Location userLatLng = getCurrentUserLocation();
         }
 
@@ -202,13 +202,13 @@ public class AlarmListener extends Service implements LocationListener {
             FileInputStream fin = new FileInputStream(alarmFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
-                this.activeAlarms = (ArrayList<Alarm>) is.readObject();
+                this.activeGeoAlarms = (ArrayList<GeoAlarm>) is.readObject();
                 is.close();
             } else {
-                this.activeAlarms = new ArrayList<Alarm>();
+                this.activeGeoAlarms = new ArrayList<GeoAlarm>();
             }
             fin.close();
-            System.out.print("LOADED " + this.activeAlarms);
+            System.out.print("LOADED " + this.activeGeoAlarms);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

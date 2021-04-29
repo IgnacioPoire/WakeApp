@@ -23,9 +23,9 @@
 
     <fragment
         android:id="@+id/nav_alarm"
-        android:name="com.wakeapp.ui.alarms.AlarmFragment"
+        android:name="com.wakeapp.ui.alarms.GeoAlarmFragment"
         android:label="@string/menu_alarm"
-        tools:layout="@layout/fragment_alarm" >
+        tools:layout="@layout/fragment_geo_alarm" >
         <action
             android:id="@+id/action_nav_alarm_to_nav_alarms"
             app:destination="@id/nav_alarms" />

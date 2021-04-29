@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:autofillHints="alarm name"
+        android:autofillHints="geoAlarm name"
         android:ems="10"
         android:hint="@string/alarm_name_input_hint"
         android:inputType="textPersonName"
@@ -54,8 +54,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:autofillHints="alarm from time"
-        android:hint="@string/alarm_time_input_hint" />
+        android:autofillHints="geoAlarm from time"
+        android:hint="@string/alarm_time_input_hint"
+        android:inputType="time" />
 
     <TextView
         android:id="@+id/alarm_interval_label"
@@ -91,21 +92,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal" />
 
-
-
-    <LinearLayout
+    <include
+        android:id="@+id/save_delete_alarm"
+        layout="@layout/save_delete_buttons"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center|bottom"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="@string/save_button_text" />
-    </LinearLayout>
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

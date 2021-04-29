@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
-import com.wakeapp.models.Alarm.Alarm;
+import com.wakeapp.models.alarms.GeoAlarm;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION = 2;
     private AppBarConfiguration mAppBarConfiguration;
-    private ArrayList<Alarm> alarms;
+    private ArrayList<GeoAlarm> geoAlarms;
     private NavController navController;
 
     @Override
@@ -146,8 +146,8 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     @Override
-    public ArrayList<Alarm> getAlarmList() {
-        return alarms;
+    public ArrayList<GeoAlarm> getAlarmList() {
+        return geoAlarms;
     }
 
     @Override
@@ -159,11 +159,11 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
             FileInputStream fin = new FileInputStream(alarmFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
-                alarms = (ArrayList<Alarm>) is.readObject();
+                geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
                 is.close();
             }
             fin.close();
-            System.out.print("LOADED " + alarms);
+            System.out.print("LOADED " + geoAlarms);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     private void loadAlarms() {
         //LOAD FROM DB
-        alarms = new ArrayList<>();
+        geoAlarms = new ArrayList<>();
     }
 
     private void startAlarmListener() {
