@@ -50,7 +50,7 @@ public class AlarmsFragment extends Fragment {
         alarmList = rootView.findViewById(R.id.alarmList);
 
         alarmsStrings = new ArrayList<>();
-        if (!varListener.getAlarmList().isEmpty()) {
+        if (!varListener.getGeoAlarmList().isEmpty()) {
             loadAlarms();
         }
 
@@ -77,7 +77,7 @@ public class AlarmsFragment extends Fragment {
     }
 
     private void loadAlarms() {
-        alarmsList = varListener.getAlarmList();
+        alarmsList = varListener.getGeoAlarmList();
         for (int i = 0; i<alarmsList.size(); i++) {
             alarmsStrings.add(alarmsList.get(i).getName());
         }

@@ -122,8 +122,8 @@ public class GeoAlarm implements Serializable {
 
     public int getEndMinutes() { return this.endTimeMinutes; }
 
-    public void setDays(int id, boolean value) {
-        this.days.set(id, value);
+    public void setDays(ArrayList<Boolean> values) {
+        this.days = values;
     }
 
     public ArrayList<Boolean> getDays() {

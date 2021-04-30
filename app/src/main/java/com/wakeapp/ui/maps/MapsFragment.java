@@ -97,7 +97,7 @@ public class MapsFragment extends Fragment {
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
 
-                if (!varListener.getAlarmList().isEmpty()) {
+                if (!varListener.getGeoAlarmList().isEmpty()) {
                     retrieveMarkers();
                 }
 
@@ -146,16 +146,16 @@ public class MapsFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                varListener.getAlarmList().add(new GeoAlarm(addresses.get(0).getAddressLine(0), marker.getPosition(), circle.getRadius()));
+                varListener.getGeoAlarmList().add(new GeoAlarm(addresses.get(0).getAddressLine(0), marker.getPosition(), circle.getRadius()));
                 try {
                     checkFileExists();
-                    File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+                    File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
                     FileOutputStream fos = new FileOutputStream(alarmFile);
                     ObjectOutputStream os = new ObjectOutputStream(fos);
-                    os.writeObject(varListener.getAlarmList());
+                    os.writeObject(varListener.getGeoAlarmList());
                     os.close();
                     fos.close();
-                    System.out.print("SAVED " +  varListener.getAlarmList());
+                    System.out.print("SAVED " +  varListener.getGeoAlarmList());
                 } catch (FileNotFoundException e) {
                     System.out.println("No file found saveChanges");
                     System.out.println(e.getMessage());
@@ -249,7 +249,7 @@ public class MapsFragment extends Fragment {
     }
 
     private void retrieveMarkers() {
-        ArrayList<GeoAlarm> geoAlarms = varListener.getAlarmList();
+        ArrayList<GeoAlarm> geoAlarms = varListener.getGeoAlarmList();
         for (int i = 0; i< geoAlarms.size(); i++) {
             double lat = geoAlarms.get(i).getLatLng().latitude;
             double lng = geoAlarms.get(i).getLatLng().longitude;
@@ -274,7 +274,7 @@ public class MapsFragment extends Fragment {
     }
 
     private void checkFileExists() {
-        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
         try {
             if(!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();

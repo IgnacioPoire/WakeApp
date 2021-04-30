@@ -31,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -238,19 +239,22 @@ public class GeoAlarmFragment extends Fragment {
         }
         geoAlarm.setDaysActive(daysActive.isChecked());
         if (!(daysActive.isChecked())) {
-            geoAlarm.setDays(0, tSun.isChecked());
-            geoAlarm.setDays(1, tMon.isChecked());
-            geoAlarm.setDays(2, tTue.isChecked());
-            geoAlarm.setDays(3, tWed.isChecked());
-            geoAlarm.setDays(4, tThu.isChecked());
-            geoAlarm.setDays(5, tFri.isChecked());
-            geoAlarm.setDays(6, tSat.isChecked());
+            ArrayList<Boolean> days = new ArrayList<>(Arrays.asList(
+                    tSun.isChecked(),
+                    tMon.isChecked(),
+                    tTue.isChecked(),
+                    tWed.isChecked(),
+                    tThu.isChecked(),
+                    tFri.isChecked(),
+                    tSat.isChecked())
+            );
+            geoAlarm.setDays(days);
         }
 
         geoAlarms.set(getArguments().getInt("ALARM_ID", 0), geoAlarm);
         try {
             checkFileExists();
-            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(geoAlarms);
@@ -280,7 +284,7 @@ public class GeoAlarmFragment extends Fragment {
     }
 
     private void checkFileExists() {
-        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
         try {
             if(!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
@@ -299,7 +303,7 @@ public class GeoAlarmFragment extends Fragment {
         geoAlarms.remove(getArguments().getInt("ALARM_ID", 0));
         try {
             checkFileExists();
-            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(geoAlarms);
