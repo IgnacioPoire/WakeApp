@@ -4,7 +4,7 @@
     android:id="@+id/fragment_alarms"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.geoAlarms.AlarmsFragment">
+    tools:context=".ui.alarms.AlarmsFragment">
 
     <ListView
         android:id="@+id/alarmList"

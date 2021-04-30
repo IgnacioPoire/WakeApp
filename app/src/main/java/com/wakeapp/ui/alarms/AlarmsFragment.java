@@ -71,7 +71,7 @@ public class AlarmsFragment extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("alarms_list", alarmsList);
                 bundle.putInt("ALARM_ID", position);
-                navController.navigate(R.id.nav_alarm, bundle);
+                navController.navigate(R.id.nav_geoalarm, bundle);
             }
         });
     }

@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:autofillHints="geoAlarm name"
+        android:autofillHints="alarm name"
         android:ems="10"
         android:hint="@string/alarm_name_input_hint"
         android:inputType="textPersonName"
@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:autofillHints="geoAlarm from time"
+        android:autofillHints="alarm from time"
         android:hint="@string/alarm_time_input_hint"
         android:inputType="time" />
 
