@@ -7,15 +7,44 @@
     android:layout_height="match_parent"
     tools:context=".ui.alarms.AlarmsFragment">
     <LinearLayout
-        android:id="@+id/geoalar_list"
+        android:id="@+id/geoAlarm_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.alarms.AlarmsFragment">
+        tools:context=".ui.alarms.AlarmsFragment"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/geo_alarms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:paddingLeft="8dp"
+            android:text="@string/geo_alarms_label"
+            android:textColor="#FFFFFF"
+            android:paddingStart="8dp"
+            tools:ignore="RtlSymmetry" />
+
+        <ListView
+            android:id="@+id/geoAlarmList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/alarms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:text="@string/alarms_label"
+            android:textColor="#FFFFFF"
+            tools:ignore="RtlSymmetry" />
 
         <ListView
             android:id="@+id/alarmList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content" >
         </ListView>
 
     </LinearLayout>

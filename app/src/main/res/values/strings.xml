@@ -43,4 +43,6 @@
     <string name="cancel_button_text">Cancel</string>
     <string name="search_place_button">Search a Place</string>
     <string name="add_alarm_button">Add an Alarm</string>
+    <string name="geo_alarms_label">Geo-Alarms:</string>
+    <string name="alarms_label">Alarms:</string>
 </resources>

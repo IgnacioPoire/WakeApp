@@ -74,7 +74,15 @@
         android:layout_gravity="center_horizontal" />
 
     <include
-        android:id="@+id/save_cancel_alarm"
+        android:id="@+id/save_delete_alarm"
+        layout="@layout/save_delete_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1" />
+
+    <include
+        android:id="@+id/save_alarm"
         layout="@layout/save_only_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"

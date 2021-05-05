@@ -13,9 +13,9 @@ public class Alarm implements Serializable {
     private int timeMinutes;
     private ArrayList<Boolean> days;
 
-    public Alarm(String name, boolean active, int hour, int minutes, ArrayList<Boolean> days) {
+    public Alarm(String name, int hour, int minutes, ArrayList<Boolean> days) {
         this.isEnabled = true;
-        this.daysActive = active;
+        this.daysActive = true;
         this.name = name;
         this.timeHour = hour;
         this.timeMinutes = minutes;

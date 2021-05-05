@@ -3,6 +3,7 @@ package com.wakeapp.ui.alarms;
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,17 +59,19 @@ public class AlarmFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final View rootView = inflater.inflate(R.layout.fragment_geo_alarm, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_alarm, container, false);
 
         alarms = (ArrayList<Alarm>) getArguments().getSerializable("alarms_list");
         alarmId = getArguments().getInt("ALARM_ID", -1);
         if (alarmId != -1) {
+            rootView.findViewById(R.id.save_alarm).setVisibility(View.GONE);
             alarm = alarms.get(alarmId);
         } else {
+            rootView.findViewById(R.id.save_delete_alarm).setVisibility(View.GONE);
             ArrayList<Boolean> days = new ArrayList<>(Arrays.asList(new Boolean[7]));
             Collections.fill(days, Boolean.TRUE);
-            alarm = new Alarm("Alarm" + Integer.toString(alarms.size() + 1),
-            false,
+            int intName = alarms != null ? alarms.size() + 1 : 1;
+            alarm = new Alarm("Alarm " + Integer.toString(intName),
             12,
             0,
             days);
@@ -156,13 +159,25 @@ public class AlarmFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final Button saveOnly = (Button) view.findViewById(R.id.save_only_button);
         final Button save = (Button) view.findViewById(R.id.save_button);
         final Button delete = (Button) view.findViewById(R.id.delete_button);
         final NavController navController = Navigation.findNavController(view);
+        saveOnly.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setData();
+                alarms.add(alarm);
+                saveAlarms();
+                navController.navigate(R.id.nav_alarms);
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAlarm();
+                setData();
+                alarms.set(getArguments().getInt("ALARM_ID", 0), alarm);
+                saveAlarms();
                 navController.navigate(R.id.nav_alarms);
             }
         });
@@ -175,7 +190,7 @@ public class AlarmFragment extends Fragment {
         });
     }
 
-    private void saveAlarm() {
+    private void setData() {
         alarm.setName(alarmName.getText().toString());
         String[] time = alarmTime.getText().toString().split(":");
         alarm.setHour(Integer.parseInt(time[0]));
@@ -193,8 +208,9 @@ public class AlarmFragment extends Fragment {
             );
             alarm.setDays(days);
         }
+    }
 
-        alarms.set(getArguments().getInt("ALARM_ID", 0), alarm);
+    private void saveAlarms() {
         try {
             checkFileExists();
             File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
