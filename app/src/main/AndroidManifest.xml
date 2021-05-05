@@ -38,6 +38,8 @@
             android:name="com.wakeapp.HelpActivity"
             android:label="@string/menu_item_help"
             android:parentActivityName="com.wakeapp.HelpActivity" />
+
+        <service android:name="com.wakeapp.AlarmListener"></service>
     </application>
 
 </manifest>

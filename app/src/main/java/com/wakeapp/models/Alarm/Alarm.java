@@ -53,6 +53,12 @@ public class Alarm implements Serializable {
         return new LatLng(lat, lng);
     }
 
+    public double getLatitude() {
+        return this.lat;
+    }
+
+    public double getLongitude() { return this.lng; }
+
     public void setLatLng(LatLng latLng) {
         this.lat = latLng.latitude;
         this.lng = latLng.longitude;

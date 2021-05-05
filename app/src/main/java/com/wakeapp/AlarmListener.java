@@ -34,17 +34,26 @@ public class AlarmListener extends Service implements LocationListener {
     boolean isNetworkEnable = false;
     double latitude, longitude;
     LocationManager locationManager;
-    Location location;
+    Location userLocation;
     private Handler mHandler = new Handler();
     private Timer mTimer = null;
     long notify_interval = 1000;
     public static String str_receiver = "servicetutorial.service.receiver";
     Intent intent;
 
+    double distanceBetweenUserAlarm;
+
 
     public AlarmListener() {
-        loadAlarms();
+        //loadAlarms();
+        System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN AlarmListener()");
     }
+
+//    @Override
+//    public int onStartCommand(Intent intent, int flags, int startId) {
+//        System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN onStartCommand()");
+//        return START_STICKY;
+//    }
 
     @Nullable
     @Override
@@ -56,10 +65,11 @@ public class AlarmListener extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
 
+        System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN onCreate");
         mTimer = new Timer();
         mTimer.schedule(new TimerTaskToGetLocation(), 5, notify_interval);
         intent = new Intent(str_receiver);
-//        fn_getlocation();
+
     }
 
     @Override
@@ -108,10 +118,13 @@ public class AlarmListener extends Service implements LocationListener {
 
         if (!isGPSEnable && !isNetworkEnable) {
 
+            //ASK USER TO ENABLE BOTH OF THEM FOR RELIABILITY PURPOSES
+            System.out.println("Neither GPS nor Network are enabled in the user's device");
+
         } else {
 
             if (isNetworkEnable) {
-                location = null;
+                userLocation = null;
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -119,15 +132,25 @@ public class AlarmListener extends Service implements LocationListener {
                 }
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
                 if (locationManager!=null){
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location!=null){
+                    userLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if (userLocation!=null){
 
-                        System.out.println("LATITUDE:"+location.getLatitude()+"");
-                        System.out.println("Longitude:"+location.getLongitude()+"");
+                        System.out.println("LATITUDE by Network:"+userLocation.getLatitude()+"");
+                        System.out.println("LONGITUDE by Network:"+userLocation.getLongitude()+"");
 
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                        fn_update(location);
+                        latitude = userLocation.getLatitude();
+                        longitude = userLocation.getLongitude();
+                        fn_update(userLocation);
+
+                        for(int i=0; i<activeAlarms.size(); i++){
+                           distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeAlarms.get(i).getLatitude(), activeAlarms.get(i).getLongitude());
+
+                           if (distanceBetweenUserAlarm <= activeAlarms.get(i).getRadius()){
+                               System.out.println("USER IS INSIDE THE RADIOUS");
+                           }
+                        }
+
+
                     }
                 }
 
@@ -135,16 +158,24 @@ public class AlarmListener extends Service implements LocationListener {
 
 
             if (isGPSEnable){
-                location = null;
+                userLocation = null;
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,0,this);
                 if (locationManager!=null){
-                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location!=null){
-                        System.out.println("LATITUDE:"+location.getLatitude()+"");
-                        System.out.println("Longitude:"+location.getLongitude()+"");
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                        fn_update(location);
+                    userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (userLocation!=null){
+                        latitude = userLocation.getLatitude();
+                        longitude = userLocation.getLongitude();
+                        System.out.println("LATITUDE by GPS:"+latitude+"");
+                        System.out.println("LONGITUDE by GPS:"+longitude+"");
+                        fn_update(userLocation);
+
+                        for(int i=0; i<activeAlarms.size(); i++){
+                            distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeAlarms.get(i).getLatitude(), activeAlarms.get(i).getLongitude());
+
+                            if (distanceBetweenUserAlarm <= activeAlarms.get(i).getRadius()){
+                                System.out.println("USER IS INSIDE THE RADIOUS");
+                            }
+                        }
                     }
                 }
             }
@@ -194,6 +225,23 @@ public class AlarmListener extends Service implements LocationListener {
         Location.distanceBetween(lat1, lon1, lat2, lon2, results);
         return results[0];
     }
+
+//    private void createNotification(){
+//        Intent i = new Intent(this, MainActivity.class);
+//        PendingIntent pi = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+//                .setContentTitle("I want food")
+//                .setContentText(notificationcontent)
+//                .setSmallIcon(R.drawable.ic_launcher)
+//                .setContentIntent(pi)
+//                .setAutoCancel(true)
+//                .setDefaults(Notification.FLAG_ONLY_ALERT_ONCE);
+//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        MediaPlayer mp= MediaPlayer.create(contexto, R.raw.your_sound);
+//        mp.start();
+//        manager.notify(73195, builder.build());
+//    }
 
     private void loadAlarms() {
         try {

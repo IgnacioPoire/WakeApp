@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
             }
         }
         Intent listener = new Intent(this, AlarmListener.class);
+        System.out.println("Listener: " + listener);
         startService(listener);
         System.out.println("Listener started");
     }
