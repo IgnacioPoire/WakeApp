@@ -64,12 +64,11 @@ public class AlarmListener extends Service implements LocationListener {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        loadAlarms();
         System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN onCreate");
         mTimer = new Timer();
         mTimer.schedule(new TimerTaskToGetLocation(), 5, notify_interval);
         intent = new Intent(str_receiver);
-
     }
 
     @Override
@@ -142,10 +141,10 @@ public class AlarmListener extends Service implements LocationListener {
                         longitude = userLocation.getLongitude();
                         fn_update(userLocation);
 
-                        for(int i=0; i<activeAlarms.size(); i++){
-                           distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeAlarms.get(i).getLatitude(), activeAlarms.get(i).getLongitude());
+                        for(int i=0; i<activeGeoAlarms.size(); i++){
+                           distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
 
-                           if (distanceBetweenUserAlarm <= activeAlarms.get(i).getRadius()){
+                           if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()){
                                System.out.println("USER IS INSIDE THE RADIOUS");
                            }
                         }
@@ -169,11 +168,13 @@ public class AlarmListener extends Service implements LocationListener {
                         System.out.println("LONGITUDE by GPS:"+longitude+"");
                         fn_update(userLocation);
 
-                        for(int i=0; i<activeAlarms.size(); i++){
-                            distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeAlarms.get(i).getLatitude(), activeAlarms.get(i).getLongitude());
+                        for(int i=0; i<activeGeoAlarms.size(); i++){
+                            distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
 
-                            if (distanceBetweenUserAlarm <= activeAlarms.get(i).getRadius()){
-                                System.out.println("USER IS INSIDE THE RADIOUS");
+                            System.out.println("Distance: " + distanceBetweenUserAlarm);
+                            System.out.println("Radius: " + activeGeoAlarms.get(i).getRadius());
+                            if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()){
+                                System.out.println("USER IS INSIDE THE RADIUS");
                             }
                         }
                     }
@@ -187,7 +188,7 @@ public class AlarmListener extends Service implements LocationListener {
 
     private void fn_update(Location location){
 
-        //intent.putExtra("latutide",location.getLatitude()+"");
+        //intent.putExtra("latitude",location.getLatitude()+"");
         //intent.putExtra("longitude",location.getLongitude()+"");
         sendBroadcast(intent);
     }
@@ -246,14 +247,14 @@ public class AlarmListener extends Service implements LocationListener {
     private void loadAlarms() {
         try {
             checkFileExists();
-            File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+            File alarmFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
             FileInputStream fin = new FileInputStream(alarmFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
                 this.activeGeoAlarms = (ArrayList<GeoAlarm>) is.readObject();
                 is.close();
             } else {
-                this.activeGeoAlarms = new ArrayList<GeoAlarm>();
+                this.activeGeoAlarms = new ArrayList<>();
             }
             fin.close();
             System.out.print("LOADED " + this.activeGeoAlarms);
