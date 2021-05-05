@@ -171,10 +171,8 @@ public class AlarmListener extends Service implements LocationListener {
                         for(int i=0; i<activeGeoAlarms.size(); i++){
                             distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
 
-                            System.out.println("Distance: " + distanceBetweenUserAlarm);
-                            System.out.println("Radius: " + activeGeoAlarms.get(i).getRadius());
                             if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()){
-                                System.out.println("USER IS INSIDE THE RADIUS");
+                                System.out.println("USER IS INSIDE THE RADIOUS");
                             }
                         }
                     }
