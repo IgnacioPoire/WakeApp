@@ -1,15 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_alarms"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.alarms.AlarmsFragment">
-
-    <ListView
-        android:id="@+id/alarmList"
+    <LinearLayout
+        android:id="@+id/geoAlarm_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
+        android:layout_height="match_parent"
+        tools:context=".ui.alarms.AlarmsFragment"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/geo_alarms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:paddingLeft="8dp"
+            android:text="@string/geo_alarms_label"
+            android:textColor="#FFFFFF"
+            android:paddingStart="8dp"
+            tools:ignore="RtlSymmetry" />
+
+        <ListView
+            android:id="@+id/geoAlarmList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/alarms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:text="@string/alarms_label"
+            android:textColor="#FFFFFF"
+            tools:ignore="RtlSymmetry" />
+
+        <ListView
+            android:id="@+id/alarmList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="@dimen/addButton_margin"
+        android:layout_marginLeft="@dimen/addButton_margin"
+        android:layout_marginTop="@dimen/addButton_margin"
+        android:layout_marginEnd="@dimen/addButton_margin"
+        android:layout_marginRight="@dimen/addButton_margin"
+        android:layout_marginBottom="@dimen/addButton_margin"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@string/add_alarm_button" />
+
 
 </RelativeLayout>

@@ -35,6 +35,14 @@
         android:layout_marginBottom="12dp"
         android:background="?android:attr/listDivider" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/all_time_active"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:hint="@string/all_time_active_hint"
+        android:text="@string/all_time_active_label" />
+
     <TextView
         android:id="@+id/alarm_time_label"
         android:layout_width="match_parent"
@@ -49,6 +57,17 @@
         android:autofillHints="alarm from time"
         android:hint="@string/alarm_time_input_hint"
         android:inputType="time" />
+
+    <TextView
+        android:id="@+id/alarm_interval_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alarm_interval_label" />
+
+    <Spinner
+        android:id="@+id/alarm_interval"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <View
         android:id="@+id/divider2"
@@ -76,14 +95,6 @@
     <include
         android:id="@+id/save_delete_alarm"
         layout="@layout/save_delete_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1" />
-
-    <include
-        android:id="@+id/save_alarm"
-        layout="@layout/save_only_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

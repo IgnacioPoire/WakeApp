@@ -8,6 +8,7 @@
     <string name="helpText">Help text</string>
     <!-- Side Menu Strings -->
     <string name="menu_maps">Map</string>
+    <string name="menu_geo_alarm">Geo-Alarm</string>
     <string name="menu_alarm">Alarm</string>
     <string name="menu_alarms">Alarms</string>
     <string name="menu_slideshow">Slideshow</string>
@@ -38,4 +39,10 @@
     <string name="all_time_active_hint">Alarm is all time active</string>
     <string name="all_days_active_hint">Alarm is all time active</string>
     <string name="save_button_text">Save</string>
+    <string name="delete_button_text">Delete</string>
+    <string name="cancel_button_text">Cancel</string>
+    <string name="search_place_button">Search a Place</string>
+    <string name="add_alarm_button">Add an Alarm</string>
+    <string name="geo_alarms_label">Geo-Alarms:</string>
+    <string name="alarms_label">Alarms:</string>
 </resources>

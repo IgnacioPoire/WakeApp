@@ -1,16 +1,21 @@
 package com.wakeapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
-import com.wakeapp.models.Alarm.Alarm;
+import com.wakeapp.models.alarms.Alarm;
+import com.wakeapp.models.alarms.GeoAlarm;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
@@ -37,13 +42,14 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION = 2;
     private AppBarConfiguration mAppBarConfiguration;
+    private ArrayList<GeoAlarm> geoAlarms;
     private ArrayList<Alarm> alarms;
     private NavController navController;
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkFileExists();
         loadAlarms();
         setContentView(R.layout.activity_main);
         checkPermission();
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -81,8 +88,9 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -128,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 || super.onSupportNavigateUp();
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
@@ -146,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     @Override
+    public ArrayList<GeoAlarm> getGeoAlarmList() {
+        return geoAlarms;
+    }
+
+    @Override
     public ArrayList<Alarm> getAlarmList() {
         return alarms;
     }
@@ -154,9 +168,19 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     public void onResume() {
         super.onResume();
         try {
-            checkFileExists();
-            File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
-            FileInputStream fin = new FileInputStream(alarmFile);
+            checkFileExists("/geoalarms.txt");
+            File alarmsFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
+            FileInputStream fin = new FileInputStream(alarmsFile);
+            if (fin.available() != 0) {
+                ObjectInputStream is = new ObjectInputStream(fin);
+                geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
+                is.close();
+            }
+            fin.close();
+            System.out.print("LOADED " + geoAlarms);
+            checkFileExists("/alarms.txt");
+            alarmsFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+            fin = new FileInputStream(alarmsFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
                 alarms = (ArrayList<Alarm>) is.readObject();
@@ -173,8 +197,8 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         }
     }
 
-    private void checkFileExists() {
-        File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+    private void checkFileExists(String filename) {
+        File alarmFile = new File(getExternalFilesDir(null) + filename);
         try {
             if(!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
@@ -191,7 +215,46 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     private void loadAlarms() {
         //LOAD FROM DB
-        alarms = new ArrayList<>();
+        try {
+            checkFileExists("/geoalarms.txt");
+            File alarmsFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
+            FileInputStream fin = new FileInputStream(alarmsFile);
+            if (fin.available() != 0) {
+                ObjectInputStream is = new ObjectInputStream(fin);
+                geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
+                is.close();
+            } else {
+                geoAlarms = new ArrayList<GeoAlarm>();
+            }
+            fin.close();
+            System.out.print("LOADED " + geoAlarms);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            checkFileExists("/alarms.txt");
+            File alarmsFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+            FileInputStream fin = new FileInputStream(alarmsFile);
+            if (fin.available() != 0) {
+                ObjectInputStream is = new ObjectInputStream(fin);
+                alarms = (ArrayList<Alarm>) is.readObject();
+                is.close();
+            } else {
+                alarms = new ArrayList<Alarm>();
+            }
+            fin.close();
+            System.out.print("LOADED " + alarms);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void startAlarmListener() {

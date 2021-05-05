@@ -31,7 +31,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
-import com.wakeapp.models.Alarm.Alarm;
+import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -97,7 +97,7 @@ public class MapsFragment extends Fragment {
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
 
-                if (!varListener.getAlarmList().isEmpty()) {
+                if (!varListener.getGeoAlarmList().isEmpty()) {
                     retrieveMarkers();
                 }
 
@@ -146,16 +146,16 @@ public class MapsFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                varListener.getAlarmList().add(new Alarm(addresses.get(0).getAddressLine(0), marker.getPosition(), circle.getRadius()));
+                varListener.getGeoAlarmList().add(new GeoAlarm(addresses.get(0).getAddressLine(0), marker.getPosition(), circle.getRadius()));
                 try {
                     checkFileExists();
-                    File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+                    File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
                     FileOutputStream fos = new FileOutputStream(alarmFile);
                     ObjectOutputStream os = new ObjectOutputStream(fos);
-                    os.writeObject(varListener.getAlarmList());
+                    os.writeObject(varListener.getGeoAlarmList());
                     os.close();
                     fos.close();
-                    System.out.print("SAVED " +  varListener.getAlarmList());
+                    System.out.print("SAVED " +  varListener.getGeoAlarmList());
                 } catch (FileNotFoundException e) {
                     System.out.println("No file found saveChanges");
                     System.out.println(e.getMessage());
@@ -249,16 +249,16 @@ public class MapsFragment extends Fragment {
     }
 
     private void retrieveMarkers() {
-        ArrayList<Alarm> alarms = varListener.getAlarmList();
-        for (int i = 0; i<alarms.size(); i++) {
-            double lat = alarms.get(i).getLatLng().latitude;
-            double lng = alarms.get(i).getLatLng().longitude;
+        ArrayList<GeoAlarm> geoAlarms = varListener.getGeoAlarmList();
+        for (int i = 0; i< geoAlarms.size(); i++) {
+            double lat = geoAlarms.get(i).getLatLng().latitude;
+            double lng = geoAlarms.get(i).getLatLng().longitude;
             MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
                     .draggable(true)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.alarm_marker_40))      // Here it is possible to specify custom icon design.
                     .position(new LatLng(lat, lng));
             mMap.addMarker(options);
-            drawCircle(new LatLng(lat, lng), alarms.get(i).getRadius());
+            drawCircle(new LatLng(lat, lng), geoAlarms.get(i).getRadius());
         }
     }
 
@@ -274,7 +274,7 @@ public class MapsFragment extends Fragment {
     }
 
     private void checkFileExists() {
-        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
         try {
             if(!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
