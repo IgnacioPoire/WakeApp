@@ -3,11 +3,15 @@ package com.wakeapp;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.MenuItem;
 import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
@@ -35,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements VariableInterface, OnRequestPermissionsResultCallback {
 
@@ -45,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private ArrayList<GeoAlarm> geoAlarms;
     private ArrayList<Alarm> alarms;
     private NavController navController;
+    private AlarmListener alarmListener;
+    private ServiceConnection connection;
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -165,6 +172,13 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     @Override
+    public void updateListenerGeoAlarms() {
+        if (alarmListener != null) {
+            alarmListener.loadGeoAlarms();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         try {
@@ -265,9 +279,21 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 return;
             }
         }
-        Intent listener = new Intent(this, AlarmListener.class);
-        System.out.println("Listener: " + listener);
-        startService(listener);
+        Intent intent = new Intent(this, AlarmListener.class);
+        System.out.println("Listener: " + intent);
+        connection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder binder) {
+                AlarmListener.AlarmListenerBinder alarmListenerBinder = (AlarmListener.AlarmListenerBinder) binder;
+                alarmListener = alarmListenerBinder.getBinder();
+            }
+            //binder comes from server to communicate with method's of
+
+            public void onServiceDisconnected(ComponentName className) {
+                alarmListener = null;
+            }
+        };
+        startService(intent);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
         System.out.println("Listener started");
     }
 }

@@ -8,4 +8,5 @@ import java.util.ArrayList;
 public interface VariableInterface {
     ArrayList<GeoAlarm> getGeoAlarmList();
     ArrayList<Alarm> getAlarmList();
+    void updateListenerGeoAlarms();
 }
