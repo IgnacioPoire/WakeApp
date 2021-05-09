@@ -167,6 +167,7 @@ public class MapsFragment extends Fragment {
                     System.out.println(e.getMessage());
                     e.printStackTrace();
                 }
+                varListener.updateListenerGeoAlarms();
                 searchButton.show();
                 radiusBar.setVisibility(View.GONE);
             }

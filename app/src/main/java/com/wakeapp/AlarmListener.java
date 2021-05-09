@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.wakeapp.models.alarms.Alarm;
 import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
@@ -40,12 +42,11 @@ public class AlarmListener extends Service implements LocationListener {
     long notify_interval = 1000;
     public static String str_receiver = "servicetutorial.service.receiver";
     Intent intent;
-
     double distanceBetweenUserAlarm;
-
+    private final IBinder mBinder = new AlarmListenerBinder();
 
     public AlarmListener() {
-        //loadAlarms();
+        //loadGeoAlarms();
         System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN AlarmListener()");
     }
 
@@ -55,16 +56,21 @@ public class AlarmListener extends Service implements LocationListener {
 //        return START_STICKY;
 //    }
 
-    @Nullable
+    public class AlarmListenerBinder extends Binder {
+        AlarmListener getBinder() {
+            return AlarmListener.this;
+        }
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        loadAlarms();
+        loadGeoAlarms();
         System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN onCreate");
         mTimer = new Timer();
         mTimer.schedule(new TimerTaskToGetLocation(), 5, notify_interval);
@@ -133,9 +139,9 @@ public class AlarmListener extends Service implements LocationListener {
                 if (locationManager != null) {
                     userLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (userLocation != null) {
-
                         System.out.println("LATITUDE by Network:" + userLocation.getLatitude() + "");
                         System.out.println("LONGITUDE by Network:" + userLocation.getLongitude() + "");
+
 
                         latitude = userLocation.getLatitude();
                         longitude = userLocation.getLongitude();
@@ -164,8 +170,9 @@ public class AlarmListener extends Service implements LocationListener {
                     if (userLocation != null) {
                         latitude = userLocation.getLatitude();
                         longitude = userLocation.getLongitude();
-                        System.out.println("LATITUDE by GPS:" + latitude + "");
-                        System.out.println("LONGITUDE by GPS:" + longitude + "");
+                        System.out.println("LATITUDE by GPS:"+latitude+"");
+                        System.out.println("LONGITUDE by GPS:"+longitude+"");
+                        System.out.println("ALARMS Amount: " + activeGeoAlarms.size()+"");
                         fn_update(userLocation);
 
                         for (int i = 0; i < activeGeoAlarms.size(); i++) {
@@ -239,7 +246,7 @@ public class AlarmListener extends Service implements LocationListener {
 //        manager.notify(73195, builder.build());
 //    }
 
-    private void loadAlarms() {
+    public void loadGeoAlarms() {
         try {
             checkFileExists();
             File alarmFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");

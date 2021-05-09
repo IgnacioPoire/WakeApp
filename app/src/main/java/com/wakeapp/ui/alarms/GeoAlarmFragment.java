@@ -214,20 +214,20 @@ public class GeoAlarmFragment extends Fragment {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveAlarm();
+                saveGeoAlarm();
                 navController.navigate(R.id.nav_alarms);
             }
         });
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteAlarm();
+                deleteGeoAlarm();
                 navController.navigate(R.id.nav_alarms);
             }
         });
     }
 
-    private void saveAlarm() {
+    private void saveGeoAlarm() {
         geoAlarm.setName(alarmName.getText().toString());
         geoAlarm.setTimeActive(timeActive.isChecked());
         if (!(timeActive.isChecked())) {
@@ -299,7 +299,7 @@ public class GeoAlarmFragment extends Fragment {
         }
     }
 
-    private void deleteAlarm() {
+    private void deleteGeoAlarm() {
         geoAlarms.remove(getArguments().getInt("ALARM_ID", 0));
         try {
             checkFileExists();
