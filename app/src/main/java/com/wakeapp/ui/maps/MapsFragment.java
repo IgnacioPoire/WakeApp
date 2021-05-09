@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,9 +50,10 @@ public class MapsFragment extends Fragment {
     private Geocoder geocoder;
 
     private MapView mMapView;
-    private GoogleMap mMap;
+    private static GoogleMap mMap;
     private Intent intent;
 
+    private static Marker userMarker;
     private Marker marker;
     private Circle circle;
     private List<Address> addresses;
@@ -287,5 +289,13 @@ public class MapsFragment extends Fragment {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public static void setMapMarker(Location location){
+        MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
+                .draggable(false)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_marker))      // Here it is possible to specify custom icon design.
+                .position(new LatLng(location.getLatitude(), location.getLongitude()));
+        userMarker = mMap.addMarker(options);
     }
 }

@@ -130,23 +130,23 @@ public class AlarmListener extends Service implements LocationListener {
                     return;
                 }
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
-                if (locationManager!=null){
+                if (locationManager != null) {
                     userLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (userLocation!=null){
+                    if (userLocation != null) {
 
-                        System.out.println("LATITUDE by Network:"+userLocation.getLatitude()+"");
-                        System.out.println("LONGITUDE by Network:"+userLocation.getLongitude()+"");
+                        System.out.println("LATITUDE by Network:" + userLocation.getLatitude() + "");
+                        System.out.println("LONGITUDE by Network:" + userLocation.getLongitude() + "");
 
                         latitude = userLocation.getLatitude();
                         longitude = userLocation.getLongitude();
                         fn_update(userLocation);
 
-                        for(int i=0; i<activeGeoAlarms.size(); i++){
-                           distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
+                        for (int i = 0; i < activeGeoAlarms.size(); i++) {
+                            distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
 
-                           if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()){
-                               System.out.println("USER IS INSIDE THE RADIOUS");
-                           }
+                            if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()) {
+                                System.out.println("USER IS INSIDE THE RADIOUS");
+                            }
                         }
 
 
@@ -156,22 +156,22 @@ public class AlarmListener extends Service implements LocationListener {
             }
 
 
-            if (isGPSEnable){
+            if (isGPSEnable) {
                 userLocation = null;
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,0,this);
-                if (locationManager!=null){
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+                if (locationManager != null) {
                     userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (userLocation!=null){
+                    if (userLocation != null) {
                         latitude = userLocation.getLatitude();
                         longitude = userLocation.getLongitude();
-                        System.out.println("LATITUDE by GPS:"+latitude+"");
-                        System.out.println("LONGITUDE by GPS:"+longitude+"");
+                        System.out.println("LATITUDE by GPS:" + latitude + "");
+                        System.out.println("LONGITUDE by GPS:" + longitude + "");
                         fn_update(userLocation);
 
-                        for(int i=0; i<activeGeoAlarms.size(); i++){
+                        for (int i = 0; i < activeGeoAlarms.size(); i++) {
                             distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
 
-                            if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()){
+                            if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()) {
                                 System.out.println("USER IS INSIDE THE RADIOUS");
                             }
                         }
@@ -184,7 +184,7 @@ public class AlarmListener extends Service implements LocationListener {
 
     }
 
-    private void fn_update(Location location){
+    private void fn_update(Location location) {
 
         //intent.putExtra("latitude",location.getLatitude()+"");
         //intent.putExtra("longitude",location.getLongitude()+"");
@@ -205,9 +205,6 @@ public class AlarmListener extends Service implements LocationListener {
         }
     }
 
-    private void getCurrentUserLocation() {
-
-    }
 
     /**
      * Returns distance between locations in meters
@@ -268,7 +265,7 @@ public class AlarmListener extends Service implements LocationListener {
     private void checkFileExists() {
         File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
         try {
-            if(!alarmFile.exists()) {
+            if (!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
                 alarmFile.createNewFile();
                 FileOutputStream oFile = new FileOutputStream(alarmFile, true);
