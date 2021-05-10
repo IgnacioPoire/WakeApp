@@ -3,14 +3,11 @@ package com.wakeapp;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +17,6 @@ import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.alarms.Alarm;
 import com.wakeapp.models.alarms.GeoAlarm;
-import com.wakeapp.ui.maps.MapsFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -54,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private ArrayList<GeoAlarm> geoAlarms;
     private ArrayList<Alarm> alarms;
     private NavController navController;
-
-    LocationManager locationManager;
     private AlarmListener alarmListener;
     private ServiceConnection connection;
 
@@ -188,26 +182,6 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     public void onResume() {
         super.onResume();
         try {
-
-            AlarmListener alarmListener = new AlarmListener();
-
-            //GET USER LOCATION TO UPDATE THE MAP CURSOR POSITION
-            locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, alarmListener);
-            Location userLastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            System.out.println("MainActivity -> onResume() -> userLastLocation: " + userLastLocation);
-
-            MapsFragment.setMapMarker(userLastLocation);
-
-            //GET ALARMS TO UPDATE THE ONES THAT SHOULD BE SHOWN IN THE MAP
-
             checkFileExists("/geoalarms.txt");
             File alarmsFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
             FileInputStream fin = new FileInputStream(alarmsFile);

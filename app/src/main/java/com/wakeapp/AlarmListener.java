@@ -12,11 +12,9 @@ import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.wakeapp.models.alarms.Alarm;
 import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
@@ -91,7 +89,6 @@ public class AlarmListener extends Service implements LocationListener {
     public void onProviderDisabled(@NonNull String provider) {
 
     }
-
 
     public void addActiveAlarm(GeoAlarm geoAlarm) {
         activeGeoAlarms.add(geoAlarm);

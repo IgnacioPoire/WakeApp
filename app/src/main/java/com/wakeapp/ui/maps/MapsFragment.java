@@ -1,19 +1,26 @@
 package com.wakeapp.ui.maps;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -30,6 +37,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.wakeapp.AlarmListener;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
 import com.wakeapp.models.alarms.GeoAlarm;
@@ -43,11 +51,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 public class MapsFragment extends Fragment {
 
     private VariableInterface varListener;
     private Geocoder geocoder;
+    private LocationManager locationManager;
+    private long LOCATION_REFRESH_TIME = 100;
+    private float LOCATION_REFRESH_DISTANCE = 1;
 
     private MapView mMapView;
     private static GoogleMap mMap;
@@ -60,6 +75,17 @@ public class MapsFragment extends Fragment {
 
     private FloatingActionButton searchButton;
     private SeekBar radiusBar;
+
+    private final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+            if (userMarker == null) {
+                setUserMarker(location);
+            } else {
+                updateUserMarker(location);
+            }
+        }
+    };
 
     @Override
     public void onAttach(Context context) {
@@ -98,15 +124,18 @@ public class MapsFragment extends Fragment {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
+                setLocationManager();
+                if (locationManager != null) {
+                    setUserMarker(getUserLocation());
+                }
 
                 if (!varListener.getGeoAlarmList().isEmpty()) {
                     retrieveMarkers();
                 }
 
-                // Add a marker in Buenos Aires and move the camera
-                LatLng buenosAires = new LatLng(-34.6, -58.38);
-                marker = mMap.addMarker(new MarkerOptions().position(buenosAires).title("Marker in Buenos Aires"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(buenosAires, 12));
+                if (userMarker != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 12));
+                }
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng arg0) {
@@ -157,7 +186,7 @@ public class MapsFragment extends Fragment {
                     os.writeObject(varListener.getGeoAlarmList());
                     os.close();
                     fos.close();
-                    System.out.print("SAVED " +  varListener.getGeoAlarmList());
+                    System.out.print("SAVED " + varListener.getGeoAlarmList());
                 } catch (FileNotFoundException e) {
                     System.out.println("No file found saveChanges");
                     System.out.println(e.getMessage());
@@ -253,7 +282,7 @@ public class MapsFragment extends Fragment {
 
     private void retrieveMarkers() {
         ArrayList<GeoAlarm> geoAlarms = varListener.getGeoAlarmList();
-        for (int i = 0; i< geoAlarms.size(); i++) {
+        for (int i = 0; i < geoAlarms.size(); i++) {
             double lat = geoAlarms.get(i).getLatLng().latitude;
             double lng = geoAlarms.get(i).getLatLng().longitude;
             MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
@@ -279,7 +308,7 @@ public class MapsFragment extends Fragment {
     private void checkFileExists() {
         File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
         try {
-            if(!alarmFile.exists()) {
+            if (!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
                 alarmFile.createNewFile();
                 FileOutputStream oFile = new FileOutputStream(alarmFile, true);
@@ -292,11 +321,65 @@ public class MapsFragment extends Fragment {
         }
     }
 
-    public static void setMapMarker(Location location){
-        MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
-                .draggable(false)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_marker))      // Here it is possible to specify custom icon design.
-                .position(new LatLng(location.getLatitude(), location.getLongitude()));
-        userMarker = mMap.addMarker(options);
+    private Location getUserLocation() {
+        locationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
+        boolean isGPSEnable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetworkEnable = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+
+        if (!isGPSEnable && !isNetworkEnable) {
+            //ASK USER TO ENABLE BOTH OF THEM FOR RELIABILITY PURPOSES
+            System.out.println("Neither GPS nor Network are enabled in the user's device");
+        } else {
+            if (isNetworkEnable) {
+                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    return location;
+                }
+            }
+            if (isGPSEnable) {
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location != null) {
+                    return location;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void setLocationManager(){
+        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        } else {
+            locationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE, locationListener);
+        }
+    }
+
+    private void setUserMarker(Location location){
+        if (location != null) {
+            MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
+                    .position(new LatLng(location.getLatitude(), location.getLongitude()));
+            userMarker = mMap.addMarker(options);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 12));
+        }
+    }
+
+    private void updateUserMarker(Location location){
+        if (location != null) {
+            System.out.println("HERE");
+            userMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
     }
 }
