@@ -63,6 +63,8 @@ public class MapsFragment extends Fragment {
     private LocationManager locationManager;
     private long LOCATION_REFRESH_TIME = 100;
     private float LOCATION_REFRESH_DISTANCE = 1;
+    private Handler handler = new Handler();
+    private Timer timer = null;
 
     private MapView mMapView;
     private static GoogleMap mMap;
@@ -87,6 +89,28 @@ public class MapsFragment extends Fragment {
         }
     };
 
+    private class TimerTaskToGetUserLocation extends TimerTask {
+        @Override
+        public void run() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (varListener != null) {
+                        Location location = varListener.getUserLocation();
+                        if (location != null) {
+                            if (userMarker == null) {
+                                setUserMarker(location);
+                            } else {
+                                System.out.println("Usermarker Updated");
+                                updateUserMarker(location);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -109,6 +133,8 @@ public class MapsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
         radiusBar = rootView.findViewById(R.id.radiusBar);
+        timer = new Timer();
+        timer.schedule(new TimerTaskToGetUserLocation(), 0, 1000);
 
         mMapView = rootView.findViewById(R.id.map_home);
         mMapView.onCreate(savedInstanceState);
@@ -125,8 +151,8 @@ public class MapsFragment extends Fragment {
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
                 setLocationManager();
-                if (locationManager != null) {
-                    setUserMarker(getUserLocation());
+                if (locationManager != null && varListener != null) {
+                    setUserMarker(varListener.getUserLocation());
                 }
 
                 if (!varListener.getGeoAlarmList().isEmpty()) {
@@ -294,17 +320,6 @@ public class MapsFragment extends Fragment {
         }
     }
 
-    private void clearMarker() {
-        /*if (marker != null) {
-            marker.remove(); // remove from map
-            marker = null;
-        }
-        if (circle != null) {
-            circle.remove();
-            circle = null;
-        }*/
-    }
-
     private void checkFileExists() {
         File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
         try {
@@ -319,38 +334,6 @@ public class MapsFragment extends Fragment {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private Location getUserLocation() {
-        locationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
-        boolean isGPSEnable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean isNetworkEnable = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-
-        if (!isGPSEnable && !isNetworkEnable) {
-            //ASK USER TO ENABLE BOTH OF THEM FOR RELIABILITY PURPOSES
-            System.out.println("Neither GPS nor Network are enabled in the user's device");
-        } else {
-            if (isNetworkEnable) {
-                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (location != null) {
-                    return location;
-                }
-            }
-            if (isGPSEnable) {
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (location != null) {
-                    return location;
-                }
-            }
-        }
-
-        return null;
     }
 
     private void setLocationManager(){
@@ -378,7 +361,6 @@ public class MapsFragment extends Fragment {
 
     private void updateUserMarker(Location location){
         if (location != null) {
-            System.out.println("HERE");
             userMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
         }
     }

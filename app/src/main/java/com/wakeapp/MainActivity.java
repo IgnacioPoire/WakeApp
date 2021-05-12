@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,11 +60,9 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         super.onCreate(savedInstanceState);
         loadAlarms();
         setContentView(R.layout.activity_main);
-        checkPermission();
-        startAlarmListener();
-    }
-
-    private void permissionsGranted() {
+        if (checkPermission()) {
+            startAlarmListener();
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -81,57 +80,59 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    public boolean checkPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
             ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                     1);
+            return false;
         } else {
-            permissionsGranted();
+            return true;
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean flag = true;
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // if permissions have been granted, do the following
-                    permissionsGranted();
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                    flag = false;
                 }
-                return;
             }
             case MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // if permissions have been granted, do the following
-                    permissionsGranted();
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                    flag = false;
                 }
-                return;
             }
             case MY_PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // if permissions have been granted, do the following
-                    permissionsGranted();
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 2);
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                            MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                    flag = false;
                 }
-                return;
             }
+        }
+        if (flag) {
+            startAlarmListener();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -176,6 +177,15 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         if (alarmListener != null) {
             alarmListener.loadGeoAlarms();
         }
+    }
+
+    @Override
+    public Location getUserLocation() {
+        if (alarmListener != null) {
+            return alarmListener.getUserLocation();
+        }
+
+        return null;
     }
 
     @Override
@@ -286,7 +296,6 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 AlarmListener.AlarmListenerBinder alarmListenerBinder = (AlarmListener.AlarmListenerBinder) binder;
                 alarmListener = alarmListenerBinder.getBinder();
             }
-            //binder comes from server to communicate with method's of
 
             public void onServiceDisconnected(ComponentName className) {
                 alarmListener = null;
