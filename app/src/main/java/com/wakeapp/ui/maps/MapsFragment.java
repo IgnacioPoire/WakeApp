@@ -119,7 +119,7 @@ public class MapsFragment extends Fragment {
         mMapView = rootView.findViewById(R.id.map_home);
 
         Timer timer = new Timer();
-        timer.schedule(new TimerTaskToGetUserLocation(), 0, LOCATION_REFRESH_TIME);
+        timer.schedule(new TimerTaskToGetUserLocation(), 250, LOCATION_REFRESH_TIME);
 
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately

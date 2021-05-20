@@ -1,6 +1,7 @@
 package com.wakeapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,13 +10,29 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.wakeapp.models.alarms.GeoAlarm;
+import com.wakeapp.ui.maps.MapsFragment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,73 +41,34 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class AlarmListener extends Service implements LocationListener {
-    private ArrayList<GeoAlarm> activeGeoAlarms;
-
-    private boolean isGPSEnable = false;
-    private boolean isNetworkEnable = false;
-    private double latitude, longitude;
-    private LocationManager locationManager;
-    private Location userLocation;
-    private double distanceBetweenUserAlarm;
-    private final long LOCATION_REFRESH_TIME = 1000;
-    private final float LOCATION_REFRESH_DISTANCE = 20;
+public class AlarmListener extends Service {
     private final IBinder mBinder = new AlarmListenerBinder();
-    private final LocationListener locationListener = new LocationListener() {
+
+    private ArrayList<GeoAlarm> activeGeoAlarms;
+    private Location userLocation;
+
+    private static final int LOCATION_REFRESH_TIME = 1500;
+    private static final int LOCATION_FASTEST_REFRESH_TIME = 500;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback = new LocationCallback() {
         @Override
-        public void onLocationChanged(final Location location) {
-            System.out.println("Location Change");
-            if (location != null) {
-                System.out.println("Location Updated");
-                userLocation = location;
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            System.out.println("onLocationResult");
+            if (locationResult == null) {
+                System.out.println("LocationResult is NULL");
             }
 
-            if (userLocation != null) {
-                for (int i = 0; i < activeGeoAlarms.size(); i++) {
-                    distanceBetweenUserAlarm = haversine(userLocation.getLatitude(), userLocation.getLongitude(), activeGeoAlarms.get(i).getLatitude(), activeGeoAlarms.get(i).getLongitude());
-
-                    if (distanceBetweenUserAlarm <= activeGeoAlarms.get(i).getRadius()) {
-                        System.out.println("USER IS INSIDE THE RADIOUS");
-                    }
-                }
+            for (Location location: locationResult.getLocations()) {
+                userLocation = location;
+                Log.d("AlarmListener", location.toString());
             }
         }
     };
-
-    public AlarmListener() {
-        System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN AlarmListener()");
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        loadGeoAlarms();
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        String bestProvider = locationManager.getBestProvider(criteria, false);
-        locationManager.requestLocationUpdates(bestProvider, LOCATION_REFRESH_TIME,
-                LOCATION_REFRESH_DISTANCE, locationListener);
-        /*if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE, locationListener);
-        } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE, locationListener);
-        }*/
-
-        System.out.println("[+] CREATED A NEW ALARMLISTENER INSTANCE, ALREADY IN onCreate");
-    }
 
     public class AlarmListenerBinder extends Binder {
         AlarmListener getBinder() {
@@ -104,45 +82,84 @@ public class AlarmListener extends Service implements LocationListener {
     }
 
     @Override
-    public void onLocationChanged(@NonNull Location location) {
-        userLocation = location;
+    public void onCreate() {
+        super.onCreate();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            stopSelf();
+        }
+
+        loadGeoAlarms();
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        getLastLocation();
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(LOCATION_REFRESH_TIME);
+        locationRequest.setFastestInterval(LOCATION_FASTEST_REFRESH_TIME);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        checkSettingsAndStartLocationUpdates();
     }
 
     @Override
-    public void onProviderEnabled(@NonNull String provider) {
-
+    public void onDestroy() {
+        stopLocationUpdates();
+        super.onDestroy();
     }
 
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
+    private void checkSettingsAndStartLocationUpdates() {
+        LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest).build();
+        SettingsClient client = LocationServices.getSettingsClient(this);
 
+        Task<LocationSettingsResponse> locationSettingsResponseTask = client.checkLocationSettings(locationSettingsRequest);
+
+        locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                System.out.println("SUCCESS");
+                startLocationUpdates();
+            }
+        });
+
+        locationSettingsResponseTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("FAILURE");
+                if (e instanceof ResolvableApiException) {
+                    ResolvableApiException apiException = (ResolvableApiException) e;
+                    Log.d("AlarmListener", apiException.getMessage());
+                }
+            }
+        });
     }
 
-    /**
-     * Returns distance in meters between two points
-     */
-    double haversine(double lat1, double lon1, double lat2, double lon2) {
-        float[] results = new float[1];
-        Location.distanceBetween(lat1, lon1, lat2, lon2, results);
-        return results[0];
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates() {
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
 
-//    private void createNotification(){
-//        Intent i = new Intent(this, MainActivity.class);
-//        PendingIntent pi = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-//                .setContentTitle("I want food")
-//                .setContentText(notificationcontent)
-//                .setSmallIcon(R.drawable.ic_launcher)
-//                .setContentIntent(pi)
-//                .setAutoCancel(true)
-//                .setDefaults(Notification.FLAG_ONLY_ALERT_ONCE);
-//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        MediaPlayer mp= MediaPlayer.create(contexto, R.raw.your_sound);
-//        mp.start();
-//        manager.notify(73195, builder.build());
-//    }
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLastLocation() {
+         Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+             @Override
+             public void onSuccess(Location location) {
+                 System.out.println("getLastLocation");
+                 if (location != null){
+                     System.out.println("Location Updated");
+                     userLocation = location;
+                 } else {
+                     System.out.println("Location is NULL");
+                 }
+             }
+         });
+    }
 
     public void loadGeoAlarms() {
         try {
