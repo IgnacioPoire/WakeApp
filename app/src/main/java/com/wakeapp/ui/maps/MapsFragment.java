@@ -1,15 +1,11 @@
 package com.wakeapp.ui.maps;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -18,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,7 +32,6 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.wakeapp.AlarmListener;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
 import com.wakeapp.models.alarms.GeoAlarm;
@@ -54,23 +48,21 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.content.Context.LOCATION_SERVICE;
+import static android.app.Activity.RESULT_OK;
 
 public class MapsFragment extends Fragment {
 
     private VariableInterface varListener;
     private Geocoder geocoder;
-    private LocationManager locationManager;
-    private long LOCATION_REFRESH_TIME = 100;
-    private float LOCATION_REFRESH_DISTANCE = 1;
-    private Handler handler = new Handler();
-    private Timer timer = null;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 250;
+    private final Handler handler = new Handler();
+    private static final int LOCATION_REFRESH_TIME = 1000;
 
-    private MapView mMapView;
     private static GoogleMap mMap;
+    private MapView mMapView;
     private Intent intent;
 
-    private static Marker userMarker;
+    private Marker userMarker;
     private Marker marker;
     private Circle circle;
     private List<Address> addresses;
@@ -78,16 +70,24 @@ public class MapsFragment extends Fragment {
     private FloatingActionButton searchButton;
     private SeekBar radiusBar;
 
-    private final LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            if (userMarker == null) {
-                setUserMarker(location);
-            } else {
-                updateUserMarker(location);
-            }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof VariableInterface) {
+            varListener = (VariableInterface) context;
+            geocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement YourActivityInterface");
         }
-    };
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        varListener = null;
+        geocoder = null;
+    }
 
     private class TimerTaskToGetUserLocation extends TimerTask {
         @Override
@@ -112,31 +112,15 @@ public class MapsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof VariableInterface) {
-            varListener = (VariableInterface) context;
-            geocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement YourActivityInterface");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        varListener = null;
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
         radiusBar = rootView.findViewById(R.id.radiusBar);
-        timer = new Timer();
-        timer.schedule(new TimerTaskToGetUserLocation(), 0, 1000);
-
+        searchButton = rootView.findViewById(R.id.searchButton);
         mMapView = rootView.findViewById(R.id.map_home);
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTaskToGetUserLocation(), 0, LOCATION_REFRESH_TIME);
+
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
 
@@ -150,8 +134,7 @@ public class MapsFragment extends Fragment {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
-                setLocationManager();
-                if (locationManager != null && varListener != null) {
+                if (varListener != null) {
                     setUserMarker(varListener.getUserLocation());
                 }
 
@@ -165,10 +148,12 @@ public class MapsFragment extends Fragment {
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng arg0) {
+                    if (radiusBar.getVisibility() == View.GONE) {
                         setMarker(arg0.latitude, arg0.longitude);
                         searchButton.hide();
                         radiusBar.setProgress(0);
                         radiusBar.setVisibility(View.VISIBLE);
+                    }
                     }
                 });
             }
@@ -176,12 +161,11 @@ public class MapsFragment extends Fragment {
 
         String apiKey = getString(R.string.google_maps_key);
         Places.initialize(getActivity().getApplicationContext(), apiKey);
-        searchButton = rootView.findViewById(R.id.searchButton);
         intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME)).build(getActivity().getApplicationContext());
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
 
@@ -257,23 +241,16 @@ public class MapsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        LatLng position = Autocomplete.getPlaceFromIntent(data).getLatLng();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
-        setMarker(position.latitude, position.longitude);
-        searchButton.hide();
-        radiusBar.setProgress(0);
-        radiusBar.setVisibility(View.VISIBLE);
-        /*if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+                LatLng position = Autocomplete.getPlaceFromIntent(data).getLatLng();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+                setMarker(position.latitude, position.longitude);
+                searchButton.hide();
+                radiusBar.setProgress(0);
+                radiusBar.setVisibility(View.VISIBLE);
             }
-            return;
-        }*/
+        }
     }
 
     void setMarker(double lat, double lng) {
@@ -282,8 +259,8 @@ public class MapsFragment extends Fragment {
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.alarm_marker_40))      // Here it is possible to specify custom icon design.
                 .position(new LatLng(lat, lng));
         marker = mMap.addMarker(options);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
         circle = drawCircle(new LatLng(lat, lng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
     }
 
     private Circle drawCircle(LatLng latLng) {
@@ -333,20 +310,6 @@ public class MapsFragment extends Fragment {
             System.out.println("IOException in checkFileExists");
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-    private void setLocationManager(){
-        if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-        } else {
-            locationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE, locationListener);
         }
     }
 
