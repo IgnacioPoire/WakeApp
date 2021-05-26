@@ -2,21 +2,23 @@ package com.wakeapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Binder;
-import android.os.Handler;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,12 +29,10 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.wakeapp.models.alarms.GeoAlarm;
-import com.wakeapp.ui.maps.MapsFragment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,11 +41,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class AlarmListener extends Service {
     private final IBinder mBinder = new AlarmListenerBinder();
+    private static final int LOCATION_SERVICE_ID = 175;
 
     private ArrayList<GeoAlarm> activeGeoAlarms;
     private Location userLocation;
@@ -58,14 +57,13 @@ public class AlarmListener extends Service {
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
+            super.onLocationResult(locationResult);
             System.out.println("onLocationResult");
-            if (locationResult == null) {
+            if (locationResult != null && locationResult.getLastLocation() != null) {
+                userLocation = locationResult.getLastLocation();
+                Log.d("LOCATION_UPDATE", userLocation.toString());
+            } else {
                 System.out.println("LocationResult is NULL");
-            }
-
-            for (Location location: locationResult.getLocations()) {
-                userLocation = location;
-                Log.d("AlarmListener", location.toString());
             }
         }
     };
@@ -137,11 +135,46 @@ public class AlarmListener extends Service {
 
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+        String channelId = "LOCATION_NOTIFICATION_CHANNEL";
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent resultIntent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                getApplicationContext(),
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                getApplicationContext(),
+                channelId
+        );
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setContentTitle("Location Service");
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+        builder.setContentText("Running");
+        builder.setContentIntent(pendingIntent);
+        builder.setAutoCancel(false);
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager != null && notificationManager.getNotificationChannel(channelId) == null) {
+                NotificationChannel notificationChannel = new NotificationChannel(
+                        channelId,
+                        "Location Service",
+                        NotificationManager.IMPORTANCE_HIGH
+                );
+                notificationChannel.setDescription("This channel is used by location service");
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        startForeground(LOCATION_SERVICE_ID, builder.build());
     }
 
     private void stopLocationUpdates() {
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+        LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
+        stopForeground(true);
+        stopSelf();
     }
 
     @SuppressLint("MissingPermission")

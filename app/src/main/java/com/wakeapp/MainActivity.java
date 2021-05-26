@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION = 2;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE = 2;
     private AppBarConfiguration mAppBarConfiguration;
     private ArrayList<GeoAlarm> geoAlarms;
     private ArrayList<Alarm> alarms;
@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     public boolean checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{
                             Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                            Manifest.permission.FOREGROUND_SERVICE},
                     1);
             return false;
         } else {
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         boolean flag = true;
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
@@ -117,11 +118,11 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                     flag = false;
                 }
             }
-            case MY_PERMISSIONS_REQUEST_ACCESS_BACKGROUND_LOCATION: {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                            MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                            new String[]{Manifest.permission.FOREGROUND_SERVICE},
+                            MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE);
                     flag = false;
                 }
             }
@@ -301,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 alarmListener = null;
             }
         };
+        intent.setAction("StartLocationService");
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
         System.out.println("Listener started");
