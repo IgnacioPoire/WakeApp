@@ -44,9 +44,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements VariableInterface, OnRequestPermissionsResultCallback {
 
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE = 2;
+    private static final int MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS = 0;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 2;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE = 3;
     private AppBarConfiguration mAppBarConfiguration;
     private ArrayList<GeoAlarm> geoAlarms;
     private ArrayList<Alarm> alarms;
@@ -60,7 +61,12 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         super.onCreate(savedInstanceState);
         loadAlarms();
         setContentView(R.layout.activity_main);
-        if (checkPermission()) {
+        System.out.println("PERMISSIONS: " +
+                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) + ", "
+        + checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        + checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)
+        + " PERMISSION GRANTED: " + PackageManager.PERMISSION_GRANTED + "\n" );
+        if (checkMyPermissions()) {
             startAlarmListener();
         }
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -79,17 +85,18 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
+    @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    public boolean checkPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+    public boolean checkMyPermissions() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            || checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this, new String[]{
+            requestPermissions(new String[]{
                             Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.FOREGROUND_SERVICE},
-                    1);
+                    MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS);
             return false;
         } else {
             return true;
@@ -100,14 +107,24 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        boolean flag = true;
+
         switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS: {
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.FOREGROUND_SERVICE},
+                    MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS);
+                    return;
+                }
+            }
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                    flag = false;
+                    return;
                 }
             }
             case MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION: {
@@ -115,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-                    flag = false;
+                    return;
                 }
             }
             case MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE: {
@@ -123,11 +140,10 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.FOREGROUND_SERVICE},
                             MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE);
-                    flag = false;
+                    return;
                 }
             }
-        }
-        if (flag) {
+
             startAlarmListener();
         }
     }
