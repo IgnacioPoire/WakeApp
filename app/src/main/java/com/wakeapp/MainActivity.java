@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
 import com.google.android.material.navigation.NavigationView;
@@ -21,9 +21,7 @@ import com.wakeapp.models.alarms.GeoAlarm;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
-import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -40,39 +38,50 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements VariableInterface, OnRequestPermissionsResultCallback {
 
+    //STATICS
+    private static final String CLASS_NAME = "MainActivity";
     private static final int MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS = 0;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 2;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE = 3;
+
+    //MAIN ACTIVITY NAV
     private AppBarConfiguration mAppBarConfiguration;
+    private NavController navController;
+
+    //SAVED ALARMS
     private ArrayList<GeoAlarm> geoAlarms;
     private ArrayList<Alarm> alarms;
-    private NavController navController;
-    private AlarmListener alarmListener;
-    private ServiceConnection connection;
+
+    //LOCATION LISTENER SERVICE
+    private LocationListenerService locationListenerService;
+    private ServiceConnection connection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            LocationListenerService.LocationListenerServiceBinder llsBinder =
+                    (LocationListenerService.LocationListenerServiceBinder) binder;
+            locationListenerService = llsBinder.getBinder();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            locationListenerService = null;
+        }
+    };
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadAlarms();
-        setContentView(R.layout.activity_main);
-        System.out.println("PERMISSIONS: " +
-                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) + ", "
-        + checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-        + checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)
-        + " PERMISSION GRANTED: " + PackageManager.PERMISSION_GRANTED + "\n" );
         if (checkMyPermissions()) {
-            startAlarmListener();
+            startLocationListenerService();
         }
+        loadAllAlarms();
+
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -85,17 +94,23 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
-    @SuppressLint("WrongConstant")
+    //STARTUP PERMISSIONS CHECK
     @RequiresApi(api = Build.VERSION_CODES.Q)
     public boolean checkMyPermissions() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
             || checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
 
-            requestPermissions(new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.FOREGROUND_SERVICE},
+            ArrayList<String> permissions = new ArrayList<>();
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            } else if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            } else if (checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.FOREGROUND_SERVICE);
+            }
+
+            requestPermissions(permissions.toArray(new String[0]),
                     MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS);
             return false;
         } else {
@@ -103,48 +118,25 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         }
     }
 
+    //ON PERMISSION RESULT
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS: {
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.FOREGROUND_SERVICE},
-                    MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS);
-                    return;
-                }
-            }
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                    return;
-                }
-            }
-            case MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                            MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-                    return;
-                }
-            }
-            case MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE: {
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.FOREGROUND_SERVICE},
-                            MY_PERMISSIONS_REQUEST_ACCESS_FOREGROUND_SERVICE);
-                    return;
-                }
-            }
+        ArrayList<String> permissionsArray = new ArrayList<>();
 
-            startAlarmListener();
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                permissionsArray.add(permissions[i]);
+            }
+        }
+
+        if(!permissionsArray.isEmpty()) {
+            requestPermissions(permissionsArray.toArray(new String[0]),
+                    MY_PERMISSIONS_REQUEST_ALL_PERMISSIONS);
+        } else {
+            startLocationListenerService();
         }
     }
 
@@ -161,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 || super.onSupportNavigateUp();
     }
 
+    //OPTIONS MENU CASES
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -179,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         }
     }
 
+    //INTERFACE FUNCTIONS START
     @Override
     public ArrayList<GeoAlarm> getGeoAlarmList() {
         return geoAlarms;
@@ -191,44 +185,32 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     @Override
     public void updateListenerGeoAlarms() {
-        if (alarmListener != null) {
-            alarmListener.loadGeoAlarms();
+        if (locationListenerService != null) {
+            locationListenerService.loadGeoAlarms();
         }
     }
 
     @Override
     public Location getUserLocation() {
-        if (alarmListener != null) {
-            return alarmListener.getUserLocation();
+        if (locationListenerService != null) {
+            return locationListenerService.getUserLocation();
         }
 
         return null;
     }
+    //INTERFACE FUNCTIONS END
 
     @Override
     public void onResume() {
+        loadAllAlarms();
         super.onResume();
+    }
+
+    //LOADS ALL ALARMS FROM FILE
+    private void loadAllAlarms() {
         try {
-            checkFileExists("/geoalarms.txt");
-            File alarmsFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
-            FileInputStream fin = new FileInputStream(alarmsFile);
-            if (fin.available() != 0) {
-                ObjectInputStream is = new ObjectInputStream(fin);
-                geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
-                is.close();
-            }
-            fin.close();
-            System.out.print("LOADED " + geoAlarms);
-            checkFileExists("/alarms.txt");
-            alarmsFile = new File(getExternalFilesDir(null) + "/alarms.txt");
-            fin = new FileInputStream(alarmsFile);
-            if (fin.available() != 0) {
-                ObjectInputStream is = new ObjectInputStream(fin);
-                alarms = (ArrayList<Alarm>) is.readObject();
-                is.close();
-            }
-            fin.close();
-            System.out.print("LOADED " + alarms);
+            loadGeoAlarms();
+            loadAlarms();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -238,6 +220,39 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         }
     }
 
+    //LOADS GEO-ALARMS FROM FILE
+    private void loadGeoAlarms() throws IOException, ClassNotFoundException {
+        checkFileExists("/geoalarms.txt");
+        File alarmsFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
+        FileInputStream fin = new FileInputStream(alarmsFile);
+        if (fin.available() != 0) {
+            ObjectInputStream is = new ObjectInputStream(fin);
+            geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
+            is.close();
+        } else {
+            geoAlarms = new ArrayList<>();
+        }
+        fin.close();
+        Log.d(CLASS_NAME, "GEO-ALARMS LOADED");
+    }
+
+    //LOADS ALARMS FROM FILE
+    private void loadAlarms() throws IOException, ClassNotFoundException {
+        checkFileExists("/alarms.txt");
+        File alarmsFile = new File(getExternalFilesDir(null) + "/alarms.txt");
+        FileInputStream fin = new FileInputStream(alarmsFile);
+        if (fin.available() != 0) {
+            ObjectInputStream is = new ObjectInputStream(fin);
+            alarms = (ArrayList<Alarm>) is.readObject();
+            is.close();
+        } else {
+            alarms = new ArrayList<>();
+        }
+        fin.close();
+        Log.d(CLASS_NAME, "ALARMS LOADED");
+    }
+
+    //CHECK IF FILE EXISTS - IF NOT THEN CREATE IT
     private void checkFileExists(String filename) {
         File alarmFile = new File(getExternalFilesDir(null) + filename);
         try {
@@ -248,79 +263,25 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 oFile.close();
             }
         } catch (IOException e) {
-            System.out.println("IOException in checkFileExists");
-            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void loadAlarms() {
-        //LOAD FROM DB
-        try {
-            checkFileExists("/geoalarms.txt");
-            File alarmsFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
-            FileInputStream fin = new FileInputStream(alarmsFile);
-            if (fin.available() != 0) {
-                ObjectInputStream is = new ObjectInputStream(fin);
-                geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
-                is.close();
-            } else {
-                geoAlarms = new ArrayList<GeoAlarm>();
-            }
-            fin.close();
-            System.out.print("LOADED " + geoAlarms);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            checkFileExists("/alarms.txt");
-            File alarmsFile = new File(getExternalFilesDir(null) + "/alarms.txt");
-            FileInputStream fin = new FileInputStream(alarmsFile);
-            if (fin.available() != 0) {
-                ObjectInputStream is = new ObjectInputStream(fin);
-                alarms = (ArrayList<Alarm>) is.readObject();
-                is.close();
-            } else {
-                alarms = new ArrayList<Alarm>();
-            }
-            fin.close();
-            System.out.print("LOADED " + alarms);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+    //STARTS LOCATION LISTENER SERVICE
+    private void startLocationListenerService() {
 
-    private void startAlarmListener() {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (AlarmListener.class.getName().equals(service.service.getClassName())) {
-                System.out.println("Listener running");
+            if (LocationListenerService.class.getName().equals(service.service.getClassName())) {
+                Log.d(CLASS_NAME, "FETCHING LOCATION LISTENER SERVICE...");
                 return;
             }
         }
-        Intent intent = new Intent(this, AlarmListener.class);
-        System.out.println("Listener: " + intent);
-        connection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName className, IBinder binder) {
-                AlarmListener.AlarmListenerBinder alarmListenerBinder = (AlarmListener.AlarmListenerBinder) binder;
-                alarmListener = alarmListenerBinder.getBinder();
-            }
 
-            public void onServiceDisconnected(ComponentName className) {
-                alarmListener = null;
-            }
-        };
+        Intent intent = new Intent(this, LocationListenerService.class);
         intent.setAction("StartLocationService");
         startService(intent);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
-        System.out.println("Listener started");
+        Log.d(CLASS_NAME, "LOCATION LISTENER SERVICE STARTED");
     }
 }

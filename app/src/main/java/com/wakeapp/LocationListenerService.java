@@ -1,6 +1,5 @@
 package com.wakeapp;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
@@ -18,7 +16,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,18 +39,27 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class AlarmListener extends Service {
-    private final IBinder mBinder = new AlarmListenerBinder();
+public class LocationListenerService extends Service {
+
+    //STATICS
+    private static final String CLASS_NAME = "LocationListenerService";
     private static final int LOCATION_SERVICE_ID = 175;
-
-    private ArrayList<GeoAlarm> activeGeoAlarms;
-    private Location userLocation;
-
     private static final int LOCATION_REFRESH_TIME = 1500;
     private static final int LOCATION_FASTEST_REFRESH_TIME = 500;
 
+    //BINDER TO ACTIVITY
+    private final IBinder mBinder = new LocationListenerServiceBinder();
+
+    //SAVED GEO-ALARMS
+    private ArrayList<GeoAlarm> activeGeoAlarms;
+
+    //LOCATION VARIABLES
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationRequest locationRequest;
+    private Location userLocation;
+    private LocationRequest locationRequest = LocationRequest.create()
+            .setInterval(LOCATION_REFRESH_TIME)
+            .setFastestInterval(LOCATION_FASTEST_REFRESH_TIME)
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -61,16 +67,17 @@ public class AlarmListener extends Service {
             System.out.println("onLocationResult");
             if (locationResult != null && locationResult.getLastLocation() != null) {
                 userLocation = locationResult.getLastLocation();
-                Log.d("LOCATION_UPDATE", userLocation.toString());
+                Log.d(CLASS_NAME, "LOCATION_UPDATE: " + userLocation.toString());
             } else {
                 System.out.println("LocationResult is NULL");
             }
         }
     };
 
-    public class AlarmListenerBinder extends Binder {
-        AlarmListener getBinder() {
-            return AlarmListener.this;
+    //BINDER TO ACTIVITY
+    public class LocationListenerServiceBinder extends Binder {
+        LocationListenerService getBinder() {
+            return LocationListenerService.this;
         }
     }
 
@@ -79,44 +86,42 @@ public class AlarmListener extends Service {
         return mBinder;
     }
 
+    //SERVICE
     @Override
     public void onCreate() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
             stopSelf();
-        }
-
+        }*/
         super.onCreate();
-
         loadGeoAlarms();
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLastLocation();
-
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(LOCATION_REFRESH_TIME);
-        locationRequest.setFastestInterval(LOCATION_FASTEST_REFRESH_TIME);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         checkSettingsAndStartLocationUpdates();
     }
 
+    //SERVICE STOPS
     @Override
     public void onDestroy() {
         stopLocationUpdates();
+        Log.d(CLASS_NAME, "STOPPED LOCATION UPDATES");
         super.onDestroy();
     }
 
+    //CHECK
     private void checkSettingsAndStartLocationUpdates() {
+
         LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest).build();
         SettingsClient client = LocationServices.getSettingsClient(this);
-
         Task<LocationSettingsResponse> locationSettingsResponseTask = client.checkLocationSettings(locationSettingsRequest);
 
         locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                System.out.println("SUCCESS");
+                Log.d(CLASS_NAME, "STARTED LOCATION UPDATES");
                 startLocationUpdates();
             }
         });
@@ -124,30 +129,34 @@ public class AlarmListener extends Service {
         locationSettingsResponseTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                System.out.println("FAILURE");
                 if (e instanceof ResolvableApiException) {
                     ResolvableApiException apiException = (ResolvableApiException) e;
-                    Log.d("AlarmListener", apiException.getMessage());
+                    Log.d(CLASS_NAME, "FAIL TO START LOCATION UPDATES :" + apiException.getMessage());
                 }
             }
         });
     }
 
+    //START LOCATION UPDATES
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
-        String channelId = "LOCATION_NOTIFICATION_CHANNEL";
+
+        final String channelId = "LOCATION_NOTIFICATION_CHANNEL";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent();
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 getApplicationContext(),
                 0,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 getApplicationContext(),
                 channelId
         );
+
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentTitle("Location Service");
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
@@ -167,16 +176,19 @@ public class AlarmListener extends Service {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
         }
+
         LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         startForeground(LOCATION_SERVICE_ID, builder.build());
     }
 
+    //STOP LOCATION UPDATES
     private void stopLocationUpdates() {
         LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
         stopForeground(true);
         stopSelf();
     }
 
+    //FIRST GET LOCATION TRY
     @SuppressLint("MissingPermission")
     private void getLastLocation() {
          Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
@@ -194,6 +206,7 @@ public class AlarmListener extends Service {
          });
     }
 
+    //LOADS ALL GEO-ALARMS FROM FILE
     public void loadGeoAlarms() {
         try {
             checkFileExists();
@@ -217,6 +230,7 @@ public class AlarmListener extends Service {
         }
     }
 
+    //CHECK IF FILE EXISTS - IF NOT THEN CREATE IT
     private void checkFileExists() {
         File alarmFile = new File(getExternalFilesDir(null) + "/alarms.txt");
         try {

@@ -40,7 +40,7 @@
             android:label="@string/menu_item_help"
             android:parentActivityName="com.wakeapp.HelpActivity" />
 
-        <service android:name="com.wakeapp.AlarmListener" />
+        <service android:name="com.wakeapp.LocationListenerService" />
     </application>
 
 </manifest>
