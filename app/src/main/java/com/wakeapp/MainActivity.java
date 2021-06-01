@@ -274,6 +274,9 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (LocationListenerService.class.getName().equals(service.service.getClassName())) {
                 Log.d(CLASS_NAME, "FETCHING LOCATION LISTENER SERVICE...");
+                bindService(new Intent(this, LocationListenerService.class),
+                        connection, Context.BIND_AUTO_CREATE);
+                Log.d(CLASS_NAME, "LOCATION LISTENER SERVICE RE-BIND");
                 return;
             }
         }
