@@ -11,7 +11,7 @@
     <string name="menu_geo_alarm">Geo-Alarm</string>
     <string name="menu_alarm">Alarm</string>
     <string name="menu_alarms">Alarms</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tracking">Tracking</string>
     <!-- Alarm Form Strings -->
     <string name="alarm_form">Alarm Form</string>
     <string name="alarm_name_label">Alarm name:</string>

@@ -15,12 +15,17 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.alarms.Alarm;
 import com.wakeapp.models.alarms.GeoAlarm;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -55,18 +60,28 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     //LOCATION LISTENER SERVICE
     private LocationListenerService locationListenerService;
+    @SuppressLint("ResourceType")
+    private MenuItem trackingItem;
+    private SwitchCompat trackingSwitch = null;
     private ServiceConnection connection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder binder) {
             LocationListenerService.LocationListenerServiceBinder llsBinder =
                     (LocationListenerService.LocationListenerServiceBinder) binder;
             locationListenerService = llsBinder.getBinder();
+            if (trackingSwitch != null) {
+                trackingSwitch.setChecked(true);
+            }
         }
 
         public void onServiceDisconnected(ComponentName className) {
             locationListenerService = null;
+            if (trackingSwitch != null) {
+                trackingSwitch.setChecked(true);
+            }
         }
     };
 
+    @SuppressLint("ResourceType")
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,12 +101,47 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_maps, R.id.nav_alarms, R.id.nav_slideshow)
+                R.id.nav_maps, R.id.nav_alarms, R.id.nav_tracking)
                 .setOpenableLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        TrackingMenuItemConfig(navigationView);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+    private void TrackingMenuItemConfig(NavigationView navigationView) {
+
+        trackingItem = navigationView.getMenu().findItem(R.id.nav_tracking);
+        trackingSwitch = (SwitchCompat) trackingItem.getActionView();
+
+        if (locationListenerService != null) {
+            trackingSwitch.setChecked(true);
+        } else {
+            trackingSwitch.setChecked(false);
+        }
+
+        trackingItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                trackingSwitch.performClick();
+                return true;
+            }
+        });
+
+        trackingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (checkMyPermissions()) {
+                        startLocationListenerService();
+                    }
+                } else {
+                    locationListenerService.stopService();
+                }
+            }
+        });
     }
 
     //STARTUP PERMISSIONS CHECK

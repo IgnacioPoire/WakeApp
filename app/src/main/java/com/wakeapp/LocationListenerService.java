@@ -43,6 +43,7 @@ public class LocationListenerService extends Service {
 
     //STATICS
     private static final String CLASS_NAME = "LocationListenerService";
+    private static final String CHANNEL_ID = "LOCATION_NOTIFICATION_CHANNEL";
     private static final int LOCATION_SERVICE_ID = 175;
     private static final int LOCATION_REFRESH_TIME = 1500;
     private static final int LOCATION_FASTEST_REFRESH_TIME = 500;
@@ -141,7 +142,6 @@ public class LocationListenerService extends Service {
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
 
-        final String channelId = "LOCATION_NOTIFICATION_CHANNEL";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent();
 
@@ -154,7 +154,7 @@ public class LocationListenerService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 getApplicationContext(),
-                channelId
+                CHANNEL_ID
         );
 
         builder.setSmallIcon(R.mipmap.ic_launcher);
@@ -166,9 +166,9 @@ public class LocationListenerService extends Service {
         builder.setPriority(NotificationCompat.PRIORITY_MAX);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager != null && notificationManager.getNotificationChannel(channelId) == null) {
+            if (notificationManager != null && notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
                 NotificationChannel notificationChannel = new NotificationChannel(
-                        channelId,
+                        CHANNEL_ID,
                         "Location Service",
                         NotificationManager.IMPORTANCE_HIGH
                 );
@@ -249,5 +249,15 @@ public class LocationListenerService extends Service {
 
     public Location getUserLocation() {
         return userLocation;
+    }
+
+    public void stopService() {
+        stopForeground(true);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager.getNotificationChannel(CHANNEL_ID) != null) {
+            notificationManager.deleteNotificationChannel(CHANNEL_ID);
+        }
+        stopSelf();
     }
 }
