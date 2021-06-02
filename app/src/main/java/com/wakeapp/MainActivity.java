@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                         startLocationListenerService();
                     }
                 } else {
-                    locationListenerService.stopService();
+                    //STOP SERVICE
                 }
             }
         });

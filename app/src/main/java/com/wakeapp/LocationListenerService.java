@@ -250,14 +250,4 @@ public class LocationListenerService extends Service {
     public Location getUserLocation() {
         return userLocation;
     }
-
-    public void stopService() {
-        stopForeground(true);
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager.getNotificationChannel(CHANNEL_ID) != null) {
-            notificationManager.deleteNotificationChannel(CHANNEL_ID);
-        }
-        stopSelf();
-    }
 }
