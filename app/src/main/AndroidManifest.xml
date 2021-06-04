@@ -40,7 +40,9 @@
             android:label="@string/menu_item_help"
             android:parentActivityName="com.wakeapp.HelpActivity" />
 
-        <service android:name="com.wakeapp.LocationListenerService" />
+        <service
+            android:name="com.wakeapp.LocationListenerService"
+            android:stopWithTask="false"/>
     </application>
 
 </manifest>

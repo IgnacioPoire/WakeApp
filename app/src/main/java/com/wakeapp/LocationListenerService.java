@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -65,13 +66,8 @@ public class LocationListenerService extends Service {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            System.out.println("onLocationResult");
-            if (locationResult != null && locationResult.getLastLocation() != null) {
-                userLocation = locationResult.getLastLocation();
-                Log.d(CLASS_NAME, "LOCATION_UPDATE: " + userLocation.toString());
-            } else {
-                System.out.println("LocationResult is NULL");
-            }
+            userLocation = locationResult.getLastLocation();
+            Log.d(CLASS_NAME, "LOCATION_UPDATE: " + userLocation.toString());
         }
     };
 
@@ -106,7 +102,6 @@ public class LocationListenerService extends Service {
     //SERVICE STOPS
     @Override
     public void onDestroy() {
-        stopLocationUpdates();
         Log.d(CLASS_NAME, "STOPPED LOCATION UPDATES");
         super.onDestroy();
     }
@@ -182,6 +177,7 @@ public class LocationListenerService extends Service {
     }
 
     //STOP LOCATION UPDATES
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void stopLocationUpdates() {
         LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
         stopForeground(true);
@@ -247,7 +243,18 @@ public class LocationListenerService extends Service {
         }
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        System.out.println("onTaskRemoved called");
+        super.onTaskRemoved(rootIntent);
+    }
+
     public Location getUserLocation() {
         return userLocation;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void stopService() {
+        this.stopLocationUpdates();
     }
 }

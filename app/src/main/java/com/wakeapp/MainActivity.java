@@ -15,9 +15,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.alarms.Alarm;
@@ -138,7 +136,9 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                         startLocationListenerService();
                     }
                 } else {
-                    //STOP SERVICE
+                    locationListenerService.stopService();
+                    unbindService(connection);
+                    locationListenerService = null;
                 }
             }
         });
