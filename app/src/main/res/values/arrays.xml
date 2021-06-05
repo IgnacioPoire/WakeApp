@@ -18,40 +18,13 @@
         <item>black</item>
     </string-array>
 
-    <string-array name="alarmRadiusMenuEntries">
-        <item>100 metros</item>
-        <item>200 metros</item>
-        <item>500 metros</item>
-        <item>1 kilometro</item>
-        <item>2 kilometros</item>
-        <item>5 kilometros</item>
+    <string-array name="appLanguageEntries">
+        <item>English</item>
+        <item>Español</item>
     </string-array>
 
-    <string-array name="alarmRadiusValues">
-        <item>100</item>
-        <item>200</item>
-        <item>500</item>
-        <item>1000</item>
-        <item>2000</item>
-        <item>5000</item>
+    <string-array name="appLanguageValues">
+        <item>english</item>
+        <item>spanish</item>
     </string-array>
-
-    <string-array name="maximumSpeedMenuEntries">
-        <item>20</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>500</item>
-        <item>1000</item>
-    </string-array>
-
-    <string-array name="maximumSpeedValues">
-        <item>20</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>500</item>
-        <item>1000</item>
-    </string-array>
-
 </resources>

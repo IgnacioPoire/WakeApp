@@ -6,32 +6,24 @@
     android:padding="@dimen/activity_horizontal_margin">
 
     <Preference
-        android:title="Tono de Alarma"
-        android:summary="Selecciona un ringtone personalizado para tu alarma."
+        android:title="Alarm Ringtone"
+        android:summary="Choose a personalized ringtone for \nyour alarms."
         android:key="alarmRingtone" />
 
     <ListPreference
-        android:title="Radio de acción de la Alarma"
-        android:summary="Elegí la distancia relativa al destino \nen la que la alarma se accionará."
-        android:key="alarmRadius"
-        android:defaultValue="500"
-        android:entries="@array/alarmRadiusMenuEntries"
-        android:entryValues="@array/alarmRadiusValues" />
-
-    <ListPreference
-        android:title="Tipo de Mapa"
-        android:summary="Elige uno de los diferentes tipos de mapa \nque ofrece Google Maps"
+        android:title="Map Style"
+        android:summary="Choose the maps style that suits \nmore your liking."
         android:key="mapType"
-        android:defaultValue="standard"
+        android:defaultValue="dark"
         android:entries="@array/mapTypeMenuEntries"
         android:entryValues="@array/mapTypeValues" />
 
     <ListPreference
-        android:defaultValue="100"
-        android:entries="@array/maximumSpeedMenuEntries"
-        android:entryValues="@array/maximumSpeedValues"
-        android:key="maximumSpeed"
-        android:summary="Elige tu velocidad de movimiento;\nésta característica se utilizará para calcular la tasa de actualización de tu ubicación."
-        android:title="Velocidad Máxima (Km/h)" />
+        android:title="Language"
+        android:summary="Choose your preferred app language."
+        android:key="appLanguage"
+        android:defaultValue="english"
+        android:entries="@array/appLanguageEntries"
+        android:entryValues="@array/appLanguageValues" />
 
 </PreferenceScreen>

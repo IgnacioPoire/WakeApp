@@ -17,11 +17,13 @@
             android:id="@+id/geo_alarms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorAccent"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:paddingLeft="8dp"
+            android:paddingStart="8dp"
             android:text="@string/geo_alarms_label"
             android:textColor="#FFFFFF"
-            android:paddingStart="8dp"
             tools:ignore="RtlSymmetry" />
 
         <ListView
@@ -34,9 +36,12 @@
             android:id="@+id/alarms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:paddingStart="8dp"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="1dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:paddingLeft="8dp"
+            android:paddingStart="8dp"
             android:text="@string/alarms_label"
             android:textColor="#FFFFFF"
             tools:ignore="RtlSymmetry" />
@@ -63,6 +68,7 @@
         android:layout_marginBottom="@dimen/addButton_margin"
         app:srcCompat="@android:drawable/ic_menu_add"
         android:layout_alignParentEnd="true"
+        app:borderWidth="3dp"
         android:contentDescription="@string/add_alarm_button" />
 
 

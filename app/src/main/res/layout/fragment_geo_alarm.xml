@@ -87,7 +87,7 @@
 
     <include
         android:id="@+id/daypicker"
-        layout="@layout/daypicker"
+        layout="@layout/day_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal" />

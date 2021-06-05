@@ -1,7 +1,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <item name="ic_menu_map" type="drawable">@android:drawable/ic_menu_zoom</item>
-    <item name="ic_menu_alarms" type="drawable">@android:drawable/ic_menu_agenda</item>
-    <item name="ic_menu_slideshow" type="drawable">@android:drawable/ic_menu_slideshow</item>
+    <item name="ic_menu_map" type="drawable">@android:drawable/ic_menu_mapmode</item>
+    <item name="ic_menu_alarm" type="drawable">@android:drawable/ic_menu_call</item>
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>

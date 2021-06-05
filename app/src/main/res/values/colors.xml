@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#B30000</color> <!-- ROJO -->
-    <color name="colorPrimaryDark">#15B300</color>  <!-- VERDE -->
-    <color name="colorAccent">#0600B3</color>  <!-- AZUL -->
+    <color name="colorPrimary">#d59563</color> <!-- BRONZE -->
+    <color name="colorPrimaryDark">#b07f4c</color>  <!-- DARK BRONZE -->
+    <color name="colorAccent">#242f3e</color>  <!-- AZUL -->
 </resources>
