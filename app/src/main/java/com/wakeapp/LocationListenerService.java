@@ -243,12 +243,6 @@ public class LocationListenerService extends Service {
         }
     }
 
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        System.out.println("onTaskRemoved called");
-        super.onTaskRemoved(rootIntent);
-    }
-
     public Location getUserLocation() {
         return userLocation;
     }

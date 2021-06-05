@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="mapTypeMenuEntries">
-        <item>Ninguno</item>
-        <item>Normal</item>
-        <item>Terrestre</item>
-        <item>Satelite</item>
-        <item>Hibrido</item>
+        <item>Standard</item>
+        <item>Vintage</item>
+        <item>Dark</item>
+        <item>Blue</item>
+        <item>Gray</item>
+        <item>Black</item>
     </string-array>
 
     <string-array name="mapTypeValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
+        <item>standard</item>
+        <item>vintage</item>
+        <item>dark</item>
+        <item>blue</item>
+        <item>gray</item>
+        <item>black</item>
     </string-array>
 
     <string-array name="alarmRadiusMenuEntries">

@@ -2,6 +2,7 @@ package com.wakeapp.ui.maps;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,6 +16,7 @@ import android.widget.SeekBar;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
@@ -134,6 +137,9 @@ public class MapsFragment extends Fragment {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
+
+                setMapStyle();
+
                 if (varListener != null) {
                     setUserMarker(varListener.getUserLocation());
                 }
@@ -215,10 +221,30 @@ public class MapsFragment extends Fragment {
         return rootView;
     }
 
+    private void setMapStyle() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        String mapType = sp.getString("mapType", "standard");
+        if (mMap != null) {
+            MapStyleOptions mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    getActivity().getApplicationContext(),
+                    getResources().getIdentifier(
+                            mapType, "raw",
+                            getActivity()
+                                    .getApplicationContext()
+                                    .getApplicationInfo()
+                                    .packageName
+                    )
+            );
+            mMap.setMapStyle(mapStyleOptions);
+        }
+    }
+
     @Override
     public void onResume() {
-        super.onResume();
         mMapView.onResume();
+        setMapStyle();
+        super.onResume();
     }
 
     @Override

@@ -1,15 +1,21 @@
 package com.wakeapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+
+import com.wakeapp.ui.maps.MapsFragment;
 
 public class PreferencesActivity extends AppCompatActivity {
 
@@ -21,14 +27,41 @@ public class PreferencesActivity extends AppCompatActivity {
             .replace(android.R.id.content, new PreferenceFragment())
             .commit();
     }
-
     public static class PreferenceFragment extends PreferenceFragmentCompat {
         private static final int REQUEST_CODE_ALERT_RINGTONE = 505;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences, rootKey);
+            loadSettings();
         }
+
+        private void loadSettings() {
+            final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            @SuppressLint("CommitPrefEdits") final SharedPreferences.Editor editor = sp.edit();
+
+            ListPreference LPMT = findPreference("mapType");
+            LPMT.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String mapType = sp.getString("mapType", "standard");
+                    if ("black".equals(mapType)) {
+                        editor.putString("mapType", "black");
+                    } else if ("blue".equals(mapType)) {
+                        editor.putString("mapType", "blue");
+                    } else if ("dark".equals(mapType)) {
+                        editor.putString("mapType", "dark");
+                    } else if ("gray".equals(mapType)) {
+                        editor.putString("mapType", "gray");
+                    } else if ("vintage".equals(mapType)) {
+                        editor.putString("mapType", "vintage");
+                    }
+                    editor.apply();
+                    return true;
+                }
+            });
+        }
+
 
         @Override
         public boolean onPreferenceTreeClick(Preference preference) {

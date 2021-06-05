@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -93,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -103,12 +104,12 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 .setOpenableLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        TrackingMenuItemConfig(navigationView);
+        trackingMenuItemConfig(navigationView);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
-    private void TrackingMenuItemConfig(NavigationView navigationView) {
+    private void trackingMenuItemConfig(NavigationView navigationView) {
 
         trackingItem = navigationView.getMenu().findItem(R.id.nav_tracking);
         trackingSwitch = (SwitchCompat) trackingItem.getActionView();

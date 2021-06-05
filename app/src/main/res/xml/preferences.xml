@@ -22,7 +22,7 @@
         android:title="Tipo de Mapa"
         android:summary="Elige uno de los diferentes tipos de mapa \nque ofrece Google Maps"
         android:key="mapType"
-        android:defaultValue="2"
+        android:defaultValue="standard"
         android:entries="@array/mapTypeMenuEntries"
         android:entryValues="@array/mapTypeValues" />
 
