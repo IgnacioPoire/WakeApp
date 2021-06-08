@@ -1,0 +1,62 @@
+<resources>
+    <!-- App Strings -->
+    <string name="app_name">WakeApp</string>
+    <!-- Main Menu Strings -->
+    <string name="menu_item_settings">Opciones</string>
+    <string name="menu_item_help">Ayuda</string>
+    <!-- Help Strings -->
+    <string name="helpText">Texto de ayuda</string>
+    <!-- Side Menu Strings -->
+    <string name="menu_maps">Mapa</string>
+    <string name="menu_geo_alarm">Geo-Alarma</string>
+    <string name="menu_alarm">Alarma</string>
+    <string name="menu_alarms">Alarmas</string>
+    <string name="menu_tracking">Rastreo</string>
+    <!-- Alarm Form Strings -->
+    <string name="alarm_form">Formulario de Alarma</string>
+    <string name="alarm_name_label">Nombre de Alarma:</string>
+    <string name="alarm_name_input_hint">Nombre de la Alarma</string>
+    <string name="alarm_name">Nombre</string>
+    <string name="all_time_active_label">Todo el tiempo activa</string>
+    <string name="all_days_active_label">Todos los días activa</string>
+    <string name="alarm_time_label">Tiempo de Inicio:</string>
+    <string name="alarm_time_input_hint">Tiempo desde cuando la alarma se encuentra activa:</string>
+    <string name="alarm_interval_label">Tiempo del intervalo:</string>
+    <string name="day_1">Dom</string>
+    <string name="day_2">Lun</string>
+    <string name="day_3">Mar</string>
+    <string name="day_4">Mie</string>
+    <string name="day_5">Jue</string>
+    <string name="day_6">Vie</string>
+    <string name="day_7">Sab</string>
+    <!-- Settings -->
+    <string name="settings_alarm_title">Tono de la Alarma</string>
+    <string name="settings_alarm_desc">Eligue un tono personalizado para\n tus Alarmas.</string>
+    <string name="settings_map_title">Estilo de Mapa</string>
+    <string name="settings_map_desc">Eligue el estilo de mapa que más\n se adapta a tu gusto.</string>
+    <string name="settings_lang_title">Lenguaje</string>
+    <string name="settings_lang_desc">Eligue tu lenguaje preferido para\n la aplicación.</string>
+    <string name="standard_map">Estandar</string>
+    <string name="vintage_map">Vintage</string>
+    <string name="dark_map">Oscuro</string>
+    <string name="blue_map">Azul</string>
+    <string name="gray_map">Gris</string>
+    <string name="black_map">Negro</string>
+    <string name="language_english">Inglés</string>
+    <string name="language_spanish">Español</string>
+    <!-- Other Strings -->
+    <string name="navigation_drawer_open">Abrir menú de navegación</string>
+    <string name="navigation_drawer_close">Cerrar menú de navegación</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Cabezal de Navegación</string>
+    <string name="all_time_active_hint">Alarma activa todo el tiempo</string>
+    <string name="all_days_active_hint">Alarma activa todos los días</string>
+    <string name="save_button_text">Guardar</string>
+    <string name="delete_button_text">Borrar</string>
+    <string name="cancel_button_text">Cancelar</string>
+    <string name="search_place_button">Buscar un Lugar</string>
+    <string name="add_alarm_button">Agregar una Alarma</string>
+    <string name="geo_alarms_label">Geo-Alarmas:</string>
+    <string name="alarms_label">Alarmas:</string>
+</resources>

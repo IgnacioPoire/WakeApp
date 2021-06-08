@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
@@ -42,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements VariableInterface, OnRequestPermissionsResultCallback {
 
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
             startLocationListenerService();
         }
         loadAllAlarms();
+        loadLocalization();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -107,6 +112,26 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         trackingMenuItemConfig(navigationView);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void loadLocalization() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String appLanguage = sp.getString("appLanguage", "en");
+        Locale locale = new Locale(appLanguage);
+        Locale.setDefault(locale);
+        Resources resources = getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+        super.onConfigurationChanged(newConfig);
     }
 
     private void trackingMenuItemConfig(NavigationView navigationView) {
@@ -251,9 +276,11 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
     //INTERFACE FUNCTIONS END
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onResume() {
         loadAllAlarms();
+        loadLocalization();
         super.onResume();
     }
 

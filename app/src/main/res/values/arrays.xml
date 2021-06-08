@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="mapTypeMenuEntries">
-        <item>Standard</item>
-        <item>Vintage</item>
-        <item>Dark</item>
-        <item>Blue</item>
-        <item>Gray</item>
-        <item>Black</item>
+        <item>@string/standard_map</item>
+        <item>@string/vintage_map</item>
+        <item>@string/dark_map</item>
+        <item>@string/blue_map</item>
+        <item>@string/gray_map</item>
+        <item>@string/black_map</item>
     </string-array>
 
     <string-array name="mapTypeValues">
@@ -19,12 +19,12 @@
     </string-array>
 
     <string-array name="appLanguageEntries">
-        <item>English</item>
-        <item>Español</item>
+        <item>@string/language_english</item>
+        <item>@string/language_spanish</item>
     </string-array>
 
     <string-array name="appLanguageValues">
-        <item>english</item>
-        <item>spanish</item>
+        <item>en</item>
+        <item>es</item>
     </string-array>
 </resources>

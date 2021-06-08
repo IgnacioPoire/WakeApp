@@ -1,32 +1,46 @@
 package com.wakeapp;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.wakeapp.ui.maps.MapsFragment;
-
 public class PreferencesActivity extends AppCompatActivity {
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportFragmentManager()
+         getSupportFragmentManager()
             .beginTransaction()
             .replace(android.R.id.content, new PreferenceFragment())
             .commit();
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onResume() {
+        setTitle(getString(R.string.menu_item_settings));
+        super.onResume();
+    }
+
     public static class PreferenceFragment extends PreferenceFragmentCompat {
         private static final int REQUEST_CODE_ALERT_RINGTONE = 505;
 
@@ -57,11 +71,37 @@ public class PreferencesActivity extends AppCompatActivity {
                         editor.putString("mapType", "vintage");
                     }
                     editor.apply();
+
+                    return true;
+                }
+            });
+
+            ListPreference LPAL = findPreference("appLanguage");
+            LPAL.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String appLanguage = sp.getString("appLanguage", "en");
+                    if ("en".equals(appLanguage)) {
+                        editor.putString("appLanguage", "en");
+                        restartActivity();
+                    } else if ("es".equals(appLanguage)) {
+                        editor.putString("appLanguage", "es");
+                        restartActivity();
+                    }
+                    editor.apply();
+
                     return true;
                 }
             });
         }
 
+        private void restartActivity() {
+            getActivity().finish();
+            Intent i = new Intent(getContext(), MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            getActivity().overridePendingTransition(0, 0);
+        }
 
         @Override
         public boolean onPreferenceTreeClick(Preference preference) {

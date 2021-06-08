@@ -22,7 +22,7 @@
         android:title="Language"
         android:summary="Choose your preferred app language."
         android:key="appLanguage"
-        android:defaultValue="english"
+        android:defaultValue="en"
         android:entries="@array/appLanguageEntries"
         android:entryValues="@array/appLanguageValues" />
 
