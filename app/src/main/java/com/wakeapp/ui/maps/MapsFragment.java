@@ -178,7 +178,7 @@ public class MapsFragment extends Fragment {
         radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                circle.setRadius(progress * 5 + 50);
+                circle.setRadius(progress * 7 + 50);
             }
 
             @Override
