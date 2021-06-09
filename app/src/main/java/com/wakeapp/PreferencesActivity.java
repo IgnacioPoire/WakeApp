@@ -83,12 +83,11 @@ public class PreferencesActivity extends AppCompatActivity {
                     String appLanguage = sp.getString("appLanguage", "en");
                     if ("en".equals(appLanguage)) {
                         editor.putString("appLanguage", "en");
-                        restartActivity();
                     } else if ("es".equals(appLanguage)) {
                         editor.putString("appLanguage", "es");
-                        restartActivity();
                     }
                     editor.apply();
+                    restartActivity();
 
                     return true;
                 }

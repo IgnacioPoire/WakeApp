@@ -6,21 +6,21 @@
     android:padding="@dimen/activity_horizontal_margin">
 
     <Preference
-        android:title="Alarm Ringtone"
-        android:summary="Choose a personalized ringtone for \nyour alarms."
+        android:title="@string/settings_alarm_title"
+        android:summary="@string/settings_alarm_desc"
         android:key="alarmRingtone" />
 
     <ListPreference
-        android:title="Map Style"
-        android:summary="Choose the maps style that suits \nmore your liking."
+        android:title="@string/settings_map_title"
+        android:summary="@string/settings_alarm_desc"
         android:key="mapType"
         android:defaultValue="dark"
         android:entries="@array/mapTypeMenuEntries"
         android:entryValues="@array/mapTypeValues" />
 
     <ListPreference
-        android:title="Language"
-        android:summary="Choose your preferred app language."
+        android:title="@string/settings_lang_title"
+        android:summary="@string/settings_lang_desc"
         android:key="appLanguage"
         android:defaultValue="en"
         android:entries="@array/appLanguageEntries"
