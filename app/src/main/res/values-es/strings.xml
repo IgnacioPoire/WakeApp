@@ -31,11 +31,11 @@
     <string name="day_7">Sab</string>
     <!-- Settings -->
     <string name="settings_alarm_title">Tono de la Alarma</string>
-    <string name="settings_alarm_desc">Eligue un tono personalizado para\n tus Alarmas.</string>
+    <string name="settings_alarm_desc">Elige un tono personalizado para\n tus Alarmas.</string>
     <string name="settings_map_title">Estilo de Mapa</string>
-    <string name="settings_map_desc">Eligue el estilo de mapa que más\n se adapta a tu gusto.</string>
+    <string name="settings_map_desc">Elige el estilo de mapa que más\n se adapta a tu gusto.</string>
     <string name="settings_lang_title">Lenguaje</string>
-    <string name="settings_lang_desc">Eligue tu lenguaje preferido para\n la aplicación.</string>
+    <string name="settings_lang_desc">Elige tu lenguaje preferido para\n la aplicación.</string>
     <string name="standard_map">Estandar</string>
     <string name="vintage_map">Vintage</string>
     <string name="dark_map">Oscuro</string>
