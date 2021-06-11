@@ -1,10 +1,99 @@
 <resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorButtonNormal</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppThemeAction" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorButtonNormal</item>
+    </style>
+
+    <style name="Standard" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryStandard</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkStandard</item>
+        <item name="colorAccent">@color/colorAccentStandard</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalStandard</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="StandardAction" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryStandard</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkStandard</item>
+        <item name="colorAccent">@color/colorAccentStandard</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalStandard</item>
+    </style>
+
+    <style name="Vintage" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryVintage</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkVintage</item>
+        <item name="colorAccent">@color/colorAccentVintage</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalVintage</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="VintageAction" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryVintage</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkVintage</item>
+        <item name="colorAccent">@color/colorAccentVintage</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalVintage</item>
+    </style>
+
+    <style name="Blue" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryBlue</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>
+        <item name="colorAccent">@color/colorAccentBlue</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalBlue</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="BlueAction" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryBlue</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>
+        <item name="colorAccent">@color/colorAccentBlue</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalBlue</item>
+    </style>
+
+    <style name="Gray" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryGray</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGray</item>
+        <item name="colorAccent">@color/colorAccentGray</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalGray</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="GrayAction" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryGray</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGray</item>
+        <item name="colorAccent">@color/colorAccentGray</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalGray</item>
+    </style>
+
+    <style name="Black" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryBlack</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkBlack</item>
+        <item name="colorAccent">@color/colorAccentBlack</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalBlack</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="BlackAction" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimaryBlack</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkBlack</item>
+        <item name="colorAccent">@color/colorAccentBlack</item>
+        <item name="colorButtonNormal">@color/colorButtonNormalBlack</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

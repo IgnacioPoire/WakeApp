@@ -224,16 +224,13 @@ public class MapsFragment extends Fragment {
     private void setMapStyle() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        String mapType = sp.getString("mapType", "standard");
+        String styleType = sp.getString("styleType", "standard");
         if (mMap != null) {
             MapStyleOptions mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
                     getActivity().getApplicationContext(),
                     getResources().getIdentifier(
-                            mapType, "raw",
-                            getActivity()
-                                    .getApplicationContext()
-                                    .getApplicationInfo()
-                                    .packageName
+                            styleType, "raw",
+                            getActivity().getPackageName()
                     )
             );
             mMap.setMapStyle(mapStyleOptions);

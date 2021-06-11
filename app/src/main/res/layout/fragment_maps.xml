@@ -26,6 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/seekBar_margin"
+        android:thumbTint="?colorButtonNormal"
+        app:borderWidth="3dp"
         android:visibility="gone" />
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -34,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/searchButton_margin"
+        app:backgroundTint="?colorButtonNormal"
         app:srcCompat="@android:drawable/ic_search_category_default"
         app:borderWidth="3dp"
         android:contentDescription="@string/search_place_button" />

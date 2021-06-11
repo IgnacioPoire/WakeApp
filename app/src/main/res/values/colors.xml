@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    //DARK THEME
     <color name="colorPrimary">#d59563</color> <!-- BRONZE -->
     <color name="colorPrimaryDark">#b07f4c</color>  <!-- DARK BRONZE -->
     <color name="colorAccent">#242f3e</color>  <!-- AZUL -->
+    <color name="colorButtonNormal">#d59563</color>  <!-- BRONZE -->
+    //STANDARD THEME
+    <color name="colorPrimaryStandard">#d1c9d1</color> <!-- LIGHT GRAY -->
+    <color name="colorPrimaryDarkStandard">#968f96</color>  <!-- GRAY -->
+    <color name="colorAccentStandard">#736d73</color>  <!-- DARK GRAY -->
+    <color name="colorButtonNormalStandard">#f8d570</color>  <!-- BRONZE -->
+    //VINTAGE THEME
+    <color name="colorPrimaryVintage">#e98d58</color> <!-- TERRACOTTA -->
+    <color name="colorPrimaryDarkVintage">#db8555</color>  <!-- DARK TERRACOTTA -->
+    <color name="colorAccentVintage">#806b63</color>  <!-- DARK GRAY -->
+    <color name="colorButtonNormalVintage">#e98d58</color>  <!-- TERRACOTTA -->
+    //BLUE THEME
+    <color name="colorPrimaryBlue">#2c6675</color> <!-- BLUE -->
+    <color name="colorPrimaryDarkBlue">#1a3646</color>  <!-- DARK BLUE -->
+    <color name="colorAccentBlue">#0e1626</color>  <!-- VERY DARK BLUE -->
+    <color name="colorButtonNormalBlue">#2c6675</color>  <!-- BLUE -->
+    //GRAY THEME
+    <color name="colorPrimaryGray">#9c9c9c</color> <!-- GRAY -->
+    <color name="colorPrimaryDarkGray">#757575</color>  <!-- DARK GRAY -->
+    <color name="colorAccentGray">#757575</color>  <!-- DARK GRAY -->
+    <color name="colorButtonNormalGray">#3c3c3c</color>  <!-- VERY DARK GRAY -->
+    //BLACK THEME
+    <color name="colorPrimaryBlack">#3c3c3c</color> <!-- MID BLACK -->
+    <color name="colorPrimaryDarkBlack">#212121</color>  <!-- BLACK -->
+    <color name="colorAccentBlack">#000000</color>  <!-- FULL BLACK -->
+    <color name="colorButtonNormalBlack">#FFFFFF</color>  <!-- WHITE -->
 </resources>

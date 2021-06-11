@@ -32,16 +32,16 @@
     <!-- Settings -->
     <string name="settings_alarm_title">Tono de la Alarma</string>
     <string name="settings_alarm_desc">Elige un tono personalizado para\n tus Alarmas.</string>
-    <string name="settings_map_title">Estilo de Mapa</string>
-    <string name="settings_map_desc">Elige el estilo de mapa que más\n se adapta a tu gusto.</string>
+    <string name="settings_style_title">Estilo de la Aplicación</string>
+    <string name="settings_style_desc">Elige el estilo de la aplicación \nque más se adapta a tu gusto.</string>
     <string name="settings_lang_title">Lenguaje</string>
     <string name="settings_lang_desc">Elige tu lenguaje preferido para\n la aplicación.</string>
-    <string name="standard_map">Estandar</string>
-    <string name="vintage_map">Vintage</string>
-    <string name="dark_map">Oscuro</string>
-    <string name="blue_map">Azul</string>
-    <string name="gray_map">Gris</string>
-    <string name="black_map">Negro</string>
+    <string name="standard_style">Estandar</string>
+    <string name="vintage_style">Vintage</string>
+    <string name="dark_style">Oscuro</string>
+    <string name="blue_style">Azul</string>
+    <string name="gray_style">Gris</string>
+    <string name="black_style">Negro</string>
     <string name="language_english">Inglés</string>
     <string name="language_spanish">Español</string>
     <!-- Other Strings -->

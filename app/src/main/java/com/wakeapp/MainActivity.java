@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.Menu;
 import android.widget.CompoundButton;
 
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.alarms.Alarm;
 import com.wakeapp.models.alarms.GeoAlarm;
@@ -88,12 +89,13 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        loadTheme();
+        loadLocalization();
         super.onCreate(savedInstanceState);
         if (checkMyPermissions()) {
             startLocationListenerService();
         }
         loadAllAlarms();
-        loadLocalization();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -124,6 +126,22 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }
+
+    private void loadTheme() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String appTheme = sp.getString("styleType", "dark");
+
+        if ("dark".equals(appTheme)) {
+            setTheme(getResources().getIdentifier("AppTheme",
+                    "style",
+                    getPackageName()));
+        } else {
+            appTheme = appTheme.substring(0, 1).toUpperCase() + appTheme.substring(1);
+            setTheme(getResources().getIdentifier(appTheme,
+                    "style",
+                    getPackageName()));
+        }
     }
 
     @Override
@@ -281,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     public void onResume() {
         loadAllAlarms();
         loadLocalization();
+        loadTheme();
         super.onResume();
     }
 

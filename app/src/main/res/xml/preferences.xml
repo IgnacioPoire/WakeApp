@@ -11,12 +11,12 @@
         android:key="alarmRingtone" />
 
     <ListPreference
-        android:title="@string/settings_map_title"
-        android:summary="@string/settings_alarm_desc"
-        android:key="mapType"
+        android:title="@string/settings_style_title"
+        android:summary="@string/settings_style_desc"
+        android:key="styleType"
         android:defaultValue="dark"
-        android:entries="@array/mapTypeMenuEntries"
-        android:entryValues="@array/mapTypeValues" />
+        android:entries="@array/styleTypeMenuEntries"
+        android:entryValues="@array/styleTypeValues" />
 
     <ListPreference
         android:title="@string/settings_lang_title"

@@ -28,7 +28,8 @@ public class PreferencesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         getSupportFragmentManager()
+        loadTheme();
+        getSupportFragmentManager()
             .beginTransaction()
             .replace(android.R.id.content, new PreferenceFragment())
             .commit();
@@ -38,7 +39,24 @@ public class PreferencesActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         setTitle(getString(R.string.menu_item_settings));
+        loadTheme();
         super.onResume();
+    }
+
+    private void loadTheme() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String appTheme = sp.getString("styleType", "dark");
+
+        if ("dark".equals(appTheme)) {
+            setTheme(getResources().getIdentifier("AppThemeAction",
+                    "style",
+                    getPackageName()));
+        } else {
+            appTheme = appTheme.substring(0, 1).toUpperCase() + appTheme.substring(1) + "Action";
+            setTheme(getResources().getIdentifier(appTheme,
+                    "style",
+                    getPackageName()));
+        }
     }
 
     public static class PreferenceFragment extends PreferenceFragmentCompat {
@@ -54,23 +72,24 @@ public class PreferencesActivity extends AppCompatActivity {
             final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
             @SuppressLint("CommitPrefEdits") final SharedPreferences.Editor editor = sp.edit();
 
-            ListPreference LPMT = findPreference("mapType");
+            ListPreference LPMT = findPreference("styleType");
             LPMT.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String mapType = sp.getString("mapType", "standard");
-                    if ("black".equals(mapType)) {
-                        editor.putString("mapType", "black");
-                    } else if ("blue".equals(mapType)) {
-                        editor.putString("mapType", "blue");
-                    } else if ("dark".equals(mapType)) {
-                        editor.putString("mapType", "dark");
-                    } else if ("gray".equals(mapType)) {
-                        editor.putString("mapType", "gray");
-                    } else if ("vintage".equals(mapType)) {
-                        editor.putString("mapType", "vintage");
+                    String styleType = sp.getString("styleType", "standard");
+                    if ("black".equals(styleType)) {
+                        editor.putString("styleType", "black");
+                    } else if ("blue".equals(styleType)) {
+                        editor.putString("styleType", "blue");
+                    } else if ("dark".equals(styleType)) {
+                        editor.putString("styleType", "dark");
+                    } else if ("gray".equals(styleType)) {
+                        editor.putString("styleType", "gray");
+                    } else if ("vintage".equals(styleType)) {
+                        editor.putString("styleType", "vintage");
                     }
                     editor.apply();
+                    restartActivity();
 
                     return true;
                 }

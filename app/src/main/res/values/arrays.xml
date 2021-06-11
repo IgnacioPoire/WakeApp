@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="mapTypeMenuEntries">
-        <item>@string/standard_map</item>
-        <item>@string/vintage_map</item>
-        <item>@string/dark_map</item>
-        <item>@string/blue_map</item>
-        <item>@string/gray_map</item>
-        <item>@string/black_map</item>
+    <string-array name="styleTypeMenuEntries">
+        <item>@string/standard_style</item>
+        <item>@string/vintage_style</item>
+        <item>@string/dark_style</item>
+        <item>@string/blue_style</item>
+        <item>@string/gray_style</item>
+        <item>@string/black_style</item>
     </string-array>
 
-    <string-array name="mapTypeValues">
+    <string-array name="styleTypeValues">
         <item>standard</item>
         <item>vintage</item>
         <item>dark</item>
