@@ -2,6 +2,8 @@ package com.wakeapp.ui.alarms;
 
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.wakeapp.R;
+import com.wakeapp.VariableInterface;
 import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class GeoAlarmFragment extends Fragment {
@@ -60,6 +64,7 @@ public class GeoAlarmFragment extends Fragment {
         intervalPos = Collections.unmodifiableMap(aMap);
     }
 
+    private VariableInterface varListener;
     private ArrayList<GeoAlarm> geoAlarms;
     private GeoAlarm geoAlarm;
     private EditText alarmName;
@@ -76,6 +81,24 @@ public class GeoAlarmFragment extends Fragment {
     private ToggleButton tThu;
     private ToggleButton tFri;
     private ToggleButton tSat;
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof VariableInterface) {
+            varListener = (VariableInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement VariableInterface");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        varListener = null;
+    }
 
     @SuppressLint("DefaultLocale")
     @Override
@@ -215,6 +238,7 @@ public class GeoAlarmFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveGeoAlarm();
+                varListener.updateListenerGeoAlarms();
                 navController.navigate(R.id.nav_alarms);
             }
         });

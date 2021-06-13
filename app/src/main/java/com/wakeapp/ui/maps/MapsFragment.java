@@ -81,7 +81,7 @@ public class MapsFragment extends Fragment {
             geocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement YourActivityInterface");
+                    + " must implement VariableInterface");
         }
     }
 

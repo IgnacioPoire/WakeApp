@@ -1,12 +1,16 @@
 package com.wakeapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
@@ -17,6 +21,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -39,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class LocationListenerService extends Service {
 
@@ -58,6 +64,7 @@ public class LocationListenerService extends Service {
     //LOCATION VARIABLES
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location userLocation;
+    private boolean tracking = false;
     private LocationRequest locationRequest = LocationRequest.create()
             .setInterval(LOCATION_REFRESH_TIME)
             .setFastestInterval(LOCATION_FASTEST_REFRESH_TIME)
@@ -70,6 +77,90 @@ public class LocationListenerService extends Service {
             Log.d(CLASS_NAME, "LOCATION_UPDATE: " + userLocation.toString());
         }
     };
+
+    //MINUTE TIMED UPDATES
+    BroadcastReceiver tickReceiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+                checkGeoAlarms();
+            }
+        }
+    };
+
+    private void checkGeoAlarms() {
+        Calendar now = Calendar.getInstance();
+
+        if (tracking) {
+            for (GeoAlarm alarm : activeGeoAlarms) {
+                if (alarm.getDaysActive()) {
+                    if (alarm.getTimeActive()) {
+                        checkGeoAlarm(alarm);
+                    } else {
+                        if (timeCheck(now, alarm)) {
+                            checkGeoAlarm(alarm);
+                        }
+                    }
+                } else {
+                    if (alarm.getTimeActive()) {
+                        if (checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
+                            checkGeoAlarm(alarm);
+                        }
+                    } else {
+                        if (timeCheck(now, alarm)
+                                && checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
+                            checkGeoAlarm(alarm);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean checkDayOfWeek(int dayOfWeekNow, GeoAlarm alarm) {
+        return alarm.getDays().get(dayOfWeekNow - 1);
+    }
+
+    private boolean timeCheck(Calendar now, GeoAlarm alarm) {
+        long start = alarm.getHour() * 60 + alarm.getMinutes();
+        long eval = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
+        long end = alarm.getEndHour() * 60 + alarm.getEndMinutes();
+        long endInterval = start + alarm.getInterval() * 30;
+
+        if (start < end) {
+            return start <= eval && eval <= end;
+        } else {
+            if (eval < start) {
+                eval = eval + 1440;
+            }
+            return start <= eval && eval <= endInterval;
+        }
+    }
+
+    private void checkGeoAlarm(GeoAlarm alarm) {
+        if(userLocation != null) {
+            double distanceUserAndAlarm = haversine(
+                    userLocation.getLatitude(),
+                    userLocation.getLongitude(),
+                    alarm.getLatLng().latitude,
+                    alarm.getLatLng().longitude
+            );
+
+            if (distanceUserAndAlarm <= alarm.getRadius()) {
+                triggerAlarm();
+            }
+        }
+    }
+
+    double haversine(double lat1, double lon1, double lat2, double lon2) {
+        float[] results = new float[1];
+        Location.distanceBetween(lat1, lon1, lat2, lon2, results);
+        return results[0];
+    }
+
+    private void triggerAlarm() {
+
+    }
 
     //BINDER TO ACTIVITY
     public class LocationListenerServiceBinder extends Binder {
@@ -86,17 +177,18 @@ public class LocationListenerService extends Service {
     //SERVICE
     @Override
     public void onCreate() {
-        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
             stopSelf();
-        }*/
+        }
         super.onCreate();
         loadGeoAlarms();
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLastLocation();
         checkSettingsAndStartLocationUpdates();
+        registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
     //SERVICE STOPS
@@ -128,6 +220,7 @@ public class LocationListenerService extends Service {
                 if (e instanceof ResolvableApiException) {
                     ResolvableApiException apiException = (ResolvableApiException) e;
                     Log.d(CLASS_NAME, "FAIL TO START LOCATION UPDATES :" + apiException.getMessage());
+                    tracking = false;
                 }
             }
         });
@@ -174,13 +267,16 @@ public class LocationListenerService extends Service {
 
         LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         startForeground(LOCATION_SERVICE_ID, builder.build());
+        tracking = true;
     }
 
     //STOP LOCATION UPDATES
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void stopLocationUpdates() {
+        unregisterReceiver(tickReceiver);
         LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
         stopForeground(true);
+        tracking = false;
         stopSelf();
     }
 
@@ -210,7 +306,8 @@ public class LocationListenerService extends Service {
             FileInputStream fin = new FileInputStream(alarmFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
-                this.activeGeoAlarms = (ArrayList<GeoAlarm>) is.readObject();
+                ArrayList<GeoAlarm> geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
+                activeGeoAlarms = getOnlyEnabled(geoAlarms);
                 is.close();
             } else {
                 this.activeGeoAlarms = new ArrayList<>();
@@ -224,6 +321,17 @@ public class LocationListenerService extends Service {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private ArrayList<GeoAlarm> getOnlyEnabled(ArrayList<GeoAlarm> geoAlarms) {
+        ArrayList<GeoAlarm> activeGeoAlarms = new ArrayList<>();
+        for (GeoAlarm geoAlarm : geoAlarms ) {
+            if (geoAlarm.getIsEnabled()) {
+                activeGeoAlarms.add(geoAlarm);
+            }
+        }
+
+        return activeGeoAlarms;
     }
 
     //CHECK IF FILE EXISTS - IF NOT THEN CREATE IT

@@ -40,7 +40,7 @@ public class AlarmsFragment extends Fragment {
             varListener = (VariableInterface) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement MainActivity");
+                    + " must implement VariableInterface");
         }
     }
 
