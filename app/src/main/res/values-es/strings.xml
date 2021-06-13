@@ -47,7 +47,7 @@
     <!-- Other Strings -->
     <string name="navigation_drawer_open">Abrir menú de navegación</string>
     <string name="navigation_drawer_close">Cerrar menú de navegación</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">WakeApp</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Cabezal de Navegación</string>
     <string name="all_time_active_hint">Alarma activa todo el tiempo</string>

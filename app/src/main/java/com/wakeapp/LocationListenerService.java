@@ -159,7 +159,7 @@ public class LocationListenerService extends Service {
     }
 
     private void triggerAlarm() {
-
+        Log.d("ALARM TRIGGER", "Alarm was triggered");
     }
 
     //BINDER TO ACTIVITY
