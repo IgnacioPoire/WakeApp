@@ -120,11 +120,11 @@ public class GeoAlarmFragment extends Fragment {
         final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
         alarmInterval = (Spinner) rootView.findViewById(R.id.alarm_interval);
         if (geoAlarm.getInterval() != 0) {
-            alarmInterval.setSelection(geoAlarm.getInterval());
+            alarmInterval.setSelection(getKeyOfValue(geoAlarm.getInterval(), "intervalValues"));
         }
 
         alarmSleep = (Spinner) rootView.findViewById(R.id.alarm_sleep);
-        alarmSleep.setSelection(geoAlarm.getSleep());
+        alarmSleep.setSelection(getKeyOfValue(geoAlarm.getSleep(), "sleepValues"));
 
         if (timeActive.isChecked()) {
             alarmTimeLabel.setVisibility(View.GONE);
@@ -297,6 +297,16 @@ public class GeoAlarmFragment extends Fragment {
         ));
 
         return Integer.parseInt(stringValues[Arrays.asList(stringNames).indexOf(selected)]);
+    }
+
+    private Integer getKeyOfValue(int selected, String resValue) {
+        String[] stringValues = getResources().getStringArray(
+                getResources().getIdentifier(resValue,
+                        "array",
+                        getActivity().getPackageName()
+                ));
+
+        return Arrays.asList(stringValues).indexOf(String.valueOf(selected));
     }
 
     private void checkFileExists() {
