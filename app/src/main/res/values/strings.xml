@@ -22,6 +22,7 @@
     <string name="alarm_time_label">Start time:</string>
     <string name="alarm_time_input_hint">Time from when the alarm is active</string>
     <string name="alarm_interval_label">Interval time:</string>
+    <string name="alarm_sleep_label">Sleep time:</string>
     <string name="day_1">Sun</string>
     <string name="day_2">Mon</string>
     <string name="day_3">Tue</string>
@@ -29,6 +30,20 @@
     <string name="day_5">Thu</string>
     <string name="day_6">Fri</string>
     <string name="day_7">Sat</string>
+    <string name="interval_30min">30 min</string>
+    <string name="interval_1hour">1 hour</string>
+    <string name="interval_2hours">2 hours</string>
+    <string name="interval_3hours">3 hours</string>
+    <string name="interval_6hours">6 hours</string>
+    <string name="interval_12hours">12 hours</string>
+    <string name="sleep_15min">15 min</string>
+    <string name="sleep_30min">30 min</string>
+    <string name="sleep_1hour">1 hour</string>
+    <string name="sleep_2hours">2 hours</string>
+    <string name="sleep_3hours">3 hours</string>
+    <string name="sleep_6hours">6 hours</string>
+    <string name="sleep_12hours">12 hours</string>
+    <string name="sleep_daily">Daily</string>
     <!-- Settings -->
     <string name="settings_alarm_title">Alarm Ringtone</string>
     <string name="settings_alarm_desc">Choose a personalized ringtone for \nyour alarms.</string>

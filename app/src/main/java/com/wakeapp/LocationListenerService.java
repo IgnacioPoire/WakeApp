@@ -78,8 +78,8 @@ public class LocationListenerService extends Service {
         }
     };
 
-    //MINUTE TIMED UPDATES
-    BroadcastReceiver tickReceiver = new BroadcastReceiver(){
+    //ALARM SYSTEM
+    private BroadcastReceiver tickReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
@@ -87,80 +87,6 @@ public class LocationListenerService extends Service {
             }
         }
     };
-
-    private void checkGeoAlarms() {
-        Calendar now = Calendar.getInstance();
-
-        if (tracking) {
-            for (GeoAlarm alarm : activeGeoAlarms) {
-                if (alarm.getDaysActive()) {
-                    if (alarm.getTimeActive()) {
-                        checkGeoAlarm(alarm);
-                    } else {
-                        if (timeCheck(now, alarm)) {
-                            checkGeoAlarm(alarm);
-                        }
-                    }
-                } else {
-                    if (alarm.getTimeActive()) {
-                        if (checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
-                            checkGeoAlarm(alarm);
-                        }
-                    } else {
-                        if (timeCheck(now, alarm)
-                                && checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
-                            checkGeoAlarm(alarm);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean checkDayOfWeek(int dayOfWeekNow, GeoAlarm alarm) {
-        return alarm.getDays().get(dayOfWeekNow - 1);
-    }
-
-    private boolean timeCheck(Calendar now, GeoAlarm alarm) {
-        long start = alarm.getHour() * 60 + alarm.getMinutes();
-        long eval = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
-        long end = alarm.getEndHour() * 60 + alarm.getEndMinutes();
-        long endInterval = start + alarm.getInterval() * 30;
-
-        if (start < end) {
-            return start <= eval && eval <= end;
-        } else {
-            if (eval < start) {
-                eval = eval + 1440;
-            }
-            return start <= eval && eval <= endInterval;
-        }
-    }
-
-    private void checkGeoAlarm(GeoAlarm alarm) {
-        if(userLocation != null) {
-            double distanceUserAndAlarm = haversine(
-                    userLocation.getLatitude(),
-                    userLocation.getLongitude(),
-                    alarm.getLatLng().latitude,
-                    alarm.getLatLng().longitude
-            );
-
-            if (distanceUserAndAlarm <= alarm.getRadius()) {
-                triggerAlarm();
-            }
-        }
-    }
-
-    double haversine(double lat1, double lon1, double lat2, double lon2) {
-        float[] results = new float[1];
-        Location.distanceBetween(lat1, lon1, lat2, lon2, results);
-        return results[0];
-    }
-
-    private void triggerAlarm() {
-        Log.d("ALARM TRIGGER", "Alarm was triggered");
-    }
 
     //BINDER TO ACTIVITY
     public class LocationListenerServiceBinder extends Binder {
@@ -196,6 +122,106 @@ public class LocationListenerService extends Service {
     public void onDestroy() {
         Log.d(CLASS_NAME, "STOPPED LOCATION UPDATES");
         super.onDestroy();
+    }
+
+    //ALARM FUNCTIONS
+    private void checkGeoAlarms() {
+        Calendar now = Calendar.getInstance();
+
+        if (tracking) {
+            for (GeoAlarm alarm : activeGeoAlarms) {
+                if (!wasTriggered(now, alarm)) {
+                    if (alarm.getDaysActive()) {
+                        if (alarm.getTimeActive()) {
+                            if (checkGeoAlarm(alarm)) {
+                                return;
+                            }
+                        } else {
+                            if (timeCheck(now, alarm)) {
+                                if(checkGeoAlarm(alarm)){
+                                    return;
+                                }
+                            }
+                        }
+                    } else {
+                        if (alarm.getTimeActive()) {
+                            if (checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
+                                if(checkGeoAlarm(alarm)){
+                                    return;
+                                }
+                            }
+                        } else {
+                            if (timeCheck(now, alarm)
+                                    && checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
+                                if(checkGeoAlarm(alarm)){
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean wasTriggered(Calendar now, GeoAlarm alarm) {
+        if (alarm.getLastTrigger() != null) {
+            long timeInMillis = now.getTimeInMillis();
+            long lastTriggerInMillis = alarm.getLastTrigger().getTimeInMillis();
+
+            return (lastTriggerInMillis < timeInMillis + alarm.getSleep() * 15 * 1000);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkDayOfWeek(int dayOfWeekNow, GeoAlarm alarm) {
+        return alarm.getDays().get(dayOfWeekNow - 1);
+    }
+
+    private boolean timeCheck(Calendar now, GeoAlarm alarm) {
+        long start = alarm.getHour() * 60 + alarm.getMinutes();
+        long eval = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
+        long end = alarm.getEndHour() * 60 + alarm.getEndMinutes();
+        long endInterval = start + alarm.getInterval() * 30;
+
+        if (start < end) {
+            return start <= eval && eval <= end;
+        } else {
+            if (eval < start) {
+                eval = eval + 1440;
+            }
+            return start <= eval && eval <= endInterval;
+        }
+    }
+
+    private boolean checkGeoAlarm(GeoAlarm alarm) {
+        if (userLocation != null) {
+            double distanceUserAndAlarm = haversine(
+                    userLocation.getLatitude(),
+                    userLocation.getLongitude(),
+                    alarm.getLatLng().latitude,
+                    alarm.getLatLng().longitude
+            );
+
+            if (distanceUserAndAlarm <= alarm.getRadius()) {
+                return triggerAlarm(alarm);
+            }
+        }
+
+        return false;
+    }
+
+    double haversine(double lat1, double lon1, double lat2, double lon2) {
+        float[] results = new float[1];
+        Location.distanceBetween(lat1, lon1, lat2, lon2, results);
+        return results[0];
+    }
+
+    private boolean triggerAlarm(GeoAlarm alarm) {
+        Log.d("ALARM TRIGGER", "Alarm was triggered");
+        alarm.setLastTrigger(Calendar.getInstance());
+        return true;
     }
 
     //CHECK

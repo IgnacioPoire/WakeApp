@@ -27,4 +27,44 @@
         <item>en</item>
         <item>es</item>
     </string-array>
+
+    <string-array name="intervalEntries">
+        <item>@string/interval_30min</item>
+        <item>@string/interval_1hour</item>
+        <item>@string/interval_2hours</item>
+        <item>@string/interval_3hours</item>
+        <item>@string/interval_6hours</item>
+        <item>@string/interval_12hours</item>
+    </string-array>
+
+    <string-array name="intervalValues">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
+    <string-array name="sleepEntries">
+        <item>@string/sleep_15min</item>
+        <item>@string/sleep_30min</item>
+        <item>@string/sleep_1hour</item>
+        <item>@string/sleep_2hours</item>
+        <item>@string/sleep_3hours</item>
+        <item>@string/sleep_6hours</item>
+        <item>@string/sleep_12hours</item>
+        <item>@string/sleep_daily</item>
+    </string-array>
+
+    <string-array name="sleepValues">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>12</item>
+        <item>24</item>
+        <item>48</item>
+        <item>96</item>
+    </string-array>
 </resources>

@@ -41,28 +41,6 @@ import java.util.Map;
 
 public class GeoAlarmFragment extends Fragment {
 
-    private static Map<Integer, String> intervals;
-    static {
-        Map<Integer, String> aMap = new HashMap<>();
-        aMap.put(1, "30 Min");
-        aMap.put(2, "1 Hour");
-        aMap.put(4, "2 Hours");
-        aMap.put(6, "3 Hours");
-        aMap.put(12, "6 Hours");
-        intervals = Collections.unmodifiableMap(aMap);
-    }
-
-    private static Map<Integer, Integer> intervalPos;
-    static {
-        Map<Integer, Integer> aMap = new HashMap<>();
-        aMap.put(1, 0);
-        aMap.put(2, 1);
-        aMap.put(4, 2);
-        aMap.put(6, 3);
-        aMap.put(12, 4);
-        intervalPos = Collections.unmodifiableMap(aMap);
-    }
-
     private VariableInterface varListener;
     private ArrayList<GeoAlarm> geoAlarms;
     private GeoAlarm geoAlarm;
@@ -72,6 +50,7 @@ public class GeoAlarmFragment extends Fragment {
     private EditText alarmTime;
     private TimePickerDialog timePickerDialog;
     private Spinner alarmInterval;
+    private Spinner alarmSleep;
 
     private ToggleButton tSun;
     private ToggleButton tMon;
@@ -137,15 +116,15 @@ public class GeoAlarmFragment extends Fragment {
                 timePickerDialog.show();
             }
         });
+
         final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
-        alarmInterval = rootView.findViewById(R.id.alarm_interval);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(),
-                android.R.layout.simple_spinner_item, new ArrayList<>(intervals.values()));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        alarmInterval.setAdapter(adapter);
+        alarmInterval = (Spinner) rootView.findViewById(R.id.alarm_interval);
         if (geoAlarm.getInterval() != 0) {
-            alarmInterval.setSelection(intervalPos.get(geoAlarm.getInterval()));
+            alarmInterval.setSelection(geoAlarm.getInterval());
         }
+
+        alarmSleep = (Spinner) rootView.findViewById(R.id.alarm_sleep);
+        alarmSleep.setSelection(geoAlarm.getSleep());
 
         if (timeActive.isChecked()) {
             alarmTimeLabel.setVisibility(View.GONE);
@@ -257,7 +236,16 @@ public class GeoAlarmFragment extends Fragment {
             String[] time = alarmTime.getText().toString().split(":");
             geoAlarm.setHour(Integer.parseInt(time[0]));
             geoAlarm.setMinutes(Integer.parseInt(time[1]));
-            geoAlarm.setInterval(getKeyFromValue(alarmInterval.getSelectedItem().toString()));
+            geoAlarm.setInterval(getValueOfKey(
+                    alarmInterval.getSelectedItem().toString(),
+                    "intervalEntries",
+                    "intervalValues"
+            ));
+            geoAlarm.setSleep(getValueOfKey(
+                    alarmSleep.getSelectedItem().toString(),
+                    "sleepEntries",
+                    "sleepValues"
+            ));
             System.out.println("EndTime: " + geoAlarm.getEndHour() + ":" + geoAlarm.getEndMinutes());
         }
         geoAlarm.setDaysActive(daysActive.isChecked());
@@ -295,15 +283,20 @@ public class GeoAlarmFragment extends Fragment {
         }
     }
 
-    private Integer getKeyFromValue(String value) {
-        for(Map.Entry<Integer, String> entry: intervals.entrySet()) {
+    private Integer getValueOfKey(String selected, String resName, String resValue) {
+        String[] stringNames = getResources().getStringArray(
+                getResources().getIdentifier(resName,
+                "array",
+                getActivity().getPackageName()
+        ));
 
-            if(value.equals(entry.getValue())) {
-                return entry.getKey();
-            }
-        }
+        String[] stringValues = getResources().getStringArray(
+                getResources().getIdentifier(resValue,
+                "array",
+                getActivity().getPackageName()
+        ));
 
-        return 0;
+        return Integer.parseInt(stringValues[Arrays.asList(stringNames).indexOf(selected)]);
     }
 
     private void checkFileExists() {

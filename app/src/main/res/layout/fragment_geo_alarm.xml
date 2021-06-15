@@ -28,12 +28,27 @@
         android:inputType="textPersonName"
         android:text="@string/alarm_name" />
 
+    <TextView
+        android:id="@+id/alarm_sleep_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alarm_sleep_label" />
+
+    <Spinner
+        android:id="@+id/alarm_sleep"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sleepEntries"
+        android:entryValues="@array/sleepValues" />
+
     <View
         android:id="@+id/divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
         android:background="?android:attr/listDivider" />
+
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/all_time_active"
@@ -67,7 +82,9 @@
     <Spinner
         android:id="@+id/alarm_interval"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:entries="@array/intervalEntries"
+        android:entryValues="@array/intervalValues"/>
 
     <View
         android:id="@+id/divider2"

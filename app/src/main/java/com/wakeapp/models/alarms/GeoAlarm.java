@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 public class GeoAlarm implements Serializable {
@@ -19,8 +20,10 @@ public class GeoAlarm implements Serializable {
     private int timeHour;
     private int timeMinutes;
     private int interval;
+    private int sleep;
     private int endTimeHour;
     private int endTimeMinutes;
+    private Calendar lastTrigger;
     private ArrayList<Boolean> days;
 
     public GeoAlarm(String name, LatLng latLng, double radius) {
@@ -34,8 +37,10 @@ public class GeoAlarm implements Serializable {
         this.timeHour = 12;
         this.timeMinutes = 0;
         this.interval = 0;
+        this.sleep = 2;
         this.endTimeHour = 0;
         this.endTimeMinutes = 0;
+        this.lastTrigger = null;
         this.days = new ArrayList<>(Arrays.asList(new Boolean[7]));
         Collections.fill(this.days, Boolean.TRUE);
     }
@@ -124,9 +129,21 @@ public class GeoAlarm implements Serializable {
         this.endTimeMinutes = minutesSum;
     }
 
+    public int getSleep() {
+        return this.sleep;
+    }
+
+    public void setSleep(int value) {
+        this.sleep = value;
+    }
+
     public int getEndHour() { return this.endTimeHour; }
 
     public int getEndMinutes() { return this.endTimeMinutes; }
+
+    public Calendar getLastTrigger() { return this.lastTrigger; }
+
+    public void setLastTrigger(Calendar value) { this.lastTrigger = value; }
 
     public void setDays(ArrayList<Boolean> values) {
         this.days = values;
