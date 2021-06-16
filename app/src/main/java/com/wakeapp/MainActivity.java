@@ -15,16 +15,15 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
 import android.widget.CompoundButton;
 
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.wakeapp.models.alarms.Alarm;
 import com.wakeapp.models.alarms.GeoAlarm;
+import com.wakeapp.services.LocationListenerService;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;

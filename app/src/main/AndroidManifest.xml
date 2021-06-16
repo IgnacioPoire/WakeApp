@@ -43,8 +43,9 @@
             android:parentActivityName="com.wakeapp.HelpActivity" />
 
         <service
-            android:name="com.wakeapp.LocationListenerService"
+            android:name="com.wakeapp.services.LocationListenerService"
             android:stopWithTask="false"/>
+
     </application>
 
 </manifest>
