@@ -9,7 +9,7 @@
     <color name="colorPrimaryStandard">#d1c9d1</color> <!-- LIGHT GRAY -->
     <color name="colorPrimaryDarkStandard">#968f96</color>  <!-- GRAY -->
     <color name="colorAccentStandard">#736d73</color>  <!-- DARK GRAY -->
-    <color name="colorButtonNormalStandard">#f8d570</color>  <!-- BRONZE -->
+    <color name="colorButtonNormalStandard">#f8d570</color>  <!-- YELLOW -->
     //VINTAGE THEME
     <color name="colorPrimaryVintage">#e98d58</color> <!-- TERRACOTTA -->
     <color name="colorPrimaryDarkVintage">#db8555</color>  <!-- DARK TERRACOTTA -->

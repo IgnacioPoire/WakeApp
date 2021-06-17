@@ -3,18 +3,25 @@ package com.wakeapp.ui.maps;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -23,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -34,6 +42,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.wakeapp.R;
 import com.wakeapp.VariableInterface;
@@ -279,7 +288,7 @@ public class MapsFragment extends Fragment {
     void setMarker(double lat, double lng) {
         MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
                 .draggable(true)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.alarm_marker_40))      // Here it is possible to specify custom icon design.
+                .icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_alarm_marker))      // Here it is possible to specify custom icon design.
                 .position(new LatLng(lat, lng));
         marker = mMap.addMarker(options);
         circle = drawCircle(new LatLng(lat, lng));
@@ -287,23 +296,38 @@ public class MapsFragment extends Fragment {
     }
 
     private Circle drawCircle(LatLng latLng) {
+        int color = ColorUtils.setAlphaComponent(getThemecolorButtonNormal(getContext()), 77);
         CircleOptions circleOptions = new CircleOptions()
                 .center(latLng)
                 .radius(50)
-                .fillColor(0x33FCBA03)              // 33 for alpha (transparency) #fcba03
-                .strokeColor(Color.BLACK)
+                .fillColor(color)
+                .strokeColor(getThemeAccentColor(getContext()))
                 .strokeWidth(3);
         return mMap.addCircle(circleOptions);
     }
 
-    private Circle drawCircle(LatLng latLng, double radius) {
+    private void drawCircle(LatLng latLng, double radius) {
+        int color = ColorUtils.setAlphaComponent(getThemecolorButtonNormal(getContext()), 77);
         CircleOptions circleOptions = new CircleOptions()
                 .center(latLng)
                 .radius(radius)
-                .fillColor(0x33FCBA03)              // 33 for alpha (transparency) #fcba03
-                .strokeColor(Color.BLACK)
+                .fillColor(color)
+                .strokeColor(getThemeAccentColor(getContext()))
                 .strokeWidth(3);
-        return mMap.addCircle(circleOptions);
+        mMap.addCircle(circleOptions);
+    }
+
+    public static int getThemeAccentColor (final Context context) {
+        final TypedValue value = new TypedValue();
+        context.getTheme ().resolveAttribute (R.attr.colorAccent, value, true);
+        return value.data;
+    }
+
+
+    public static int getThemecolorButtonNormal (final Context context) {
+        final TypedValue value = new TypedValue();
+        context.getTheme ().resolveAttribute (R.attr.colorButtonNormal, value, true);
+        return value.data;
     }
 
     private void retrieveMarkers() {
@@ -312,12 +336,21 @@ public class MapsFragment extends Fragment {
             double lat = geoAlarms.get(i).getLatLng().latitude;
             double lng = geoAlarms.get(i).getLatLng().longitude;
             MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
-                    .draggable(true)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.alarm_marker_40))      // Here it is possible to specify custom icon design.
+                    .draggable(false)
+                    .icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_alarm_marker))      // Here it is possible to specify custom icon design.
                     .position(new LatLng(lat, lng));
             mMap.addMarker(options);
             drawCircle(new LatLng(lat, lng), geoAlarms.get(i).getRadius());
         }
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     private void checkFileExists() {
@@ -339,6 +372,7 @@ public class MapsFragment extends Fragment {
     private void setUserMarker(Location location){
         if (location != null) {
             MarkerOptions options = new MarkerOptions()                 // This MarkerOptions object is needed to add a marker.
+                    .icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_user_marker))
                     .position(new LatLng(location.getLatitude(), location.getLongitude()));
             userMarker = mMap.addMarker(options);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), 12));
