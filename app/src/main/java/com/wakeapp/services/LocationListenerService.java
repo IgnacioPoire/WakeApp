@@ -12,13 +12,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.RingtoneManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -47,8 +49,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class LocationListenerService extends Service {
 
@@ -59,13 +63,13 @@ public class LocationListenerService extends Service {
     private static final int LOCATION_SERVICE_ID = 175;
     private static final int LOCATION_REFRESH_TIME = 1500;
     private static final int LOCATION_FASTEST_REFRESH_TIME = 500;
-    private static final long[] vibratePattern = { 0, 100, 200, 300 };
+    private static final long[] VIBRATION_PATTERN = { 0, 100, 200, 300 };
 
     //BINDER TO ACTIVITY
     private final IBinder mBinder = new LocationListenerServiceBinder();
 
     //SAVED GEO-ALARMS
-    private ArrayList<GeoAlarm> activeGeoAlarms;
+    private ArrayList<GeoAlarm> geoAlarms;
 
     //LOCATION VARIABLES
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -135,16 +139,17 @@ public class LocationListenerService extends Service {
         Calendar now = Calendar.getInstance();
 
         if (tracking) {
-            for (GeoAlarm alarm : activeGeoAlarms) {
-                if (!wasTriggered(now, alarm)) {
+            int index = 0;
+            for (GeoAlarm alarm : geoAlarms) {
+                if (!wasTriggered(now, alarm) && alarm.getIsEnabled()) {
                     if (alarm.getDaysActive()) {
                         if (alarm.getTimeActive()) {
-                            if (checkGeoAlarm(alarm)) {
+                            if (checkGeoAlarm(alarm, index)) {
                                 return;
                             }
                         } else {
                             if (timeCheck(now, alarm)) {
-                                if(checkGeoAlarm(alarm)){
+                                if(checkGeoAlarm(alarm, index)){
                                     return;
                                 }
                             }
@@ -152,20 +157,21 @@ public class LocationListenerService extends Service {
                     } else {
                         if (alarm.getTimeActive()) {
                             if (checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
-                                if(checkGeoAlarm(alarm)){
+                                if(checkGeoAlarm(alarm, index)){
                                     return;
                                 }
                             }
                         } else {
                             if (timeCheck(now, alarm)
                                     && checkDayOfWeek(now.get(Calendar.DAY_OF_WEEK), alarm)) {
-                                if(checkGeoAlarm(alarm)){
+                                if(checkGeoAlarm(alarm, index)){
                                     return;
                                 }
                             }
                         }
                     }
                 }
+                index++;
             }
         }
     }
@@ -175,7 +181,7 @@ public class LocationListenerService extends Service {
             long timeInMillis = now.getTimeInMillis();
             long lastTriggerInMillis = alarm.getLastTrigger().getTimeInMillis();
 
-            return (lastTriggerInMillis >= timeInMillis - alarm.getSleep() * 15 * 1000);
+            return (lastTriggerInMillis >= timeInMillis - TimeUnit.MINUTES.toMillis(alarm.getSleep() * 15));
         } else {
             return false;
         }
@@ -201,7 +207,7 @@ public class LocationListenerService extends Service {
         }
     }
 
-    private boolean checkGeoAlarm(GeoAlarm alarm) {
+    private boolean checkGeoAlarm(GeoAlarm alarm, final int index) {
         if (userLocation != null) {
             double distanceUserAndAlarm = haversine(
                     userLocation.getLatitude(),
@@ -211,7 +217,7 @@ public class LocationListenerService extends Service {
             );
 
             if (distanceUserAndAlarm <= alarm.getRadius()) {
-                return triggerAlarm(alarm);
+                return triggerAlarm(alarm, index);
             }
         }
 
@@ -224,7 +230,7 @@ public class LocationListenerService extends Service {
         return results[0];
     }
 
-    private boolean triggerAlarm(GeoAlarm alarm) {
+    private boolean triggerAlarm(GeoAlarm alarm, final int index) {
         Log.d("ALARM TRIGGER", "Alarm was triggered");
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -240,28 +246,61 @@ public class LocationListenerService extends Service {
                 .setContentText(alarm.getName())
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSound(Settings.System.DEFAULT_RINGTONE_URI, AudioManager.STREAM_ALARM)
-                .setVibrate(vibratePattern)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), AudioManager.STREAM_ALARM)
+                .setOnlyAlertOnce(true)
+                .setVibrate(VIBRATION_PATTERN)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .build();
 
         notificationManager.notify(1, notification);
         alarm.setLastTrigger(Calendar.getInstance());
+        geoAlarms.set(index, alarm);
+        saveGeoAlarms();
         return true;
     }
 
     private void checkAlarmChannel(NotificationManager notificationManager) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager != null && notificationManager.getNotificationChannel(ALARM_CHANNEL_ID) == null) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .build();
                 NotificationChannel notificationChannel = new NotificationChannel(
                         ALARM_CHANNEL_ID,
                         "Alarm Channel",
                         NotificationManager.IMPORTANCE_HIGH
                 );
                 notificationChannel.setDescription("This channel is used by the geo-alarms");
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(Color.RED);
+                notificationChannel.enableVibration(true);
+                notificationChannel.setVibrationPattern(VIBRATION_PATTERN);
+                notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
                 notificationManager.createNotificationChannel(notificationChannel);
             }
+        }
+    }
+
+    private void saveGeoAlarms() {
+        try {
+            checkFileExists();
+            File alarmFile = new File(getExternalFilesDir(null) + "/geoalarms.txt");
+            FileOutputStream fos = new FileOutputStream(alarmFile);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(geoAlarms);
+            os.close();
+            fos.close();
+            System.out.print("SAVED " + geoAlarms);
+        } catch (FileNotFoundException e) {
+            System.out.println("No file found saveChanges");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("IOException in SaveChanges");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -373,14 +412,13 @@ public class LocationListenerService extends Service {
             FileInputStream fin = new FileInputStream(alarmFile);
             if (fin.available() != 0) {
                 ObjectInputStream is = new ObjectInputStream(fin);
-                ArrayList<GeoAlarm> geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
-                activeGeoAlarms = getOnlyEnabled(geoAlarms);
+                geoAlarms = (ArrayList<GeoAlarm>) is.readObject();
                 is.close();
             } else {
-                this.activeGeoAlarms = new ArrayList<>();
+                this.geoAlarms = new ArrayList<>();
             }
             fin.close();
-            System.out.print("LOADED " + this.activeGeoAlarms);
+            System.out.print("LOADED " + this.geoAlarms);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -388,17 +426,6 @@ public class LocationListenerService extends Service {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    private ArrayList<GeoAlarm> getOnlyEnabled(ArrayList<GeoAlarm> geoAlarms) {
-        ArrayList<GeoAlarm> activeGeoAlarms = new ArrayList<>();
-        for (GeoAlarm geoAlarm : geoAlarms ) {
-            if (geoAlarm.getIsEnabled()) {
-                activeGeoAlarms.add(geoAlarm);
-            }
-        }
-
-        return activeGeoAlarms;
     }
 
     //CHECK IF FILE EXISTS - IF NOT THEN CREATE IT
