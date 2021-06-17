@@ -27,6 +27,8 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/seekBar_margin"
         android:thumbTint="?colorButtonNormal"
+        android:progressTint="?colorButtonNormal"
+        android:progressBackgroundTint="?colorButtonNormal"
         app:borderWidth="3dp"
         android:visibility="gone" />
     
