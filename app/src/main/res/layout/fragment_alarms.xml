@@ -6,53 +6,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.alarms.AlarmsFragment">
-    <LinearLayout
-        android:id="@+id/geoAlarm_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.alarms.AlarmsFragment"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/geo_alarms"
-            android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/geoAlarm_list"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
-            android:text="@string/geo_alarms_label"
-            android:textColor="#FFFFFF"
-            tools:ignore="RtlSymmetry" />
+            android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/geoAlarmList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
+            <TextView
+                android:id="@+id/geo_alarms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@string/geo_alarms_label"
+                android:textColor="#FFFFFF"
+                tools:ignore="RtlSymmetry" />
 
-        <TextView
-            android:id="@+id/alarms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?colorAccent"
-            android:layout_marginTop="1dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
-            android:text="@string/alarms_label"
-            android:textColor="#FFFFFF"
-            tools:ignore="RtlSymmetry" />
+            <ListView
+                android:id="@+id/geoAlarmList"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="NestedScrolling">
+            </ListView>
 
-        <ListView
-            android:id="@+id/alarmList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
+            <TextView
+                android:id="@+id/alarms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?colorAccent"
+                android:layout_marginTop="1dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
+                android:text="@string/alarms_label"
+                android:textColor="#FFFFFF"
+                tools:ignore="RtlSymmetry" />
 
-    </LinearLayout>
+            <ListView
+                android:id="@+id/alarmList"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="NestedScrolling">
+            </ListView>
+
+        </LinearLayout>
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addButton"

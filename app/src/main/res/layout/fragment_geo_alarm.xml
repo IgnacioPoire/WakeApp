@@ -62,7 +62,7 @@
         android:id="@+id/alarm_time_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alarm_time_label" />
+        android:text="@string/geoalarm_time_label" />
 
     <EditText
         android:id="@+id/alarm_time"

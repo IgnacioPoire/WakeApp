@@ -19,7 +19,8 @@
     <string name="alarm_name">Nombre</string>
     <string name="all_time_active_label">Todo el tiempo activa</string>
     <string name="all_days_active_label">Todos los días activa</string>
-    <string name="alarm_time_label">Tiempo de Inicio:</string>
+    <string name="geoalarm_time_label">Tiempo de Inicio:</string>
+    <string name="alarm_time_label">Tiempo de Activación:</string>
     <string name="alarm_time_input_hint">Tiempo desde cuando la alarma se encuentra activa:</string>
     <string name="alarm_interval_label">Tiempo del intervalo:</string>
     <string name="alarm_sleep_label">Tiempo deshabilitada:</string>

@@ -256,7 +256,7 @@ public class LocationListenerService extends Service {
         notificationManager.notify(1, notification);
         alarm.setLastTrigger(Calendar.getInstance());
         geoAlarms.set(index, alarm);
-        saveGeoAlarms();
+        //saveGeoAlarms();
         return true;
     }
 

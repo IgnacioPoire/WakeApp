@@ -19,7 +19,8 @@
     <string name="alarm_name">Name</string>
     <string name="all_time_active_label">All time active</string>
     <string name="all_days_active_label">All days active</string>
-    <string name="alarm_time_label">Start time:</string>
+    <string name="geoalarm_time_label">Start time:</string>
+    <string name="alarm_time_label">Trigger time:</string>
     <string name="alarm_time_input_hint">Time from when the alarm is active</string>
     <string name="alarm_interval_label">Interval time:</string>
     <string name="alarm_sleep_label">Sleep time:</string>
