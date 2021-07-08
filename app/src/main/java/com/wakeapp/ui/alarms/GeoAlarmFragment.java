@@ -45,6 +45,7 @@ public class GeoAlarmFragment extends Fragment {
     private ArrayList<GeoAlarm> geoAlarms;
     private GeoAlarm geoAlarm;
     private EditText alarmName;
+    private SwitchCompat outsideActive;
     private SwitchCompat timeActive;
     private SwitchCompat daysActive;
     private EditText alarmTime;
@@ -97,6 +98,10 @@ public class GeoAlarmFragment extends Fragment {
         //All Time Active
         timeActive = rootView.findViewById(R.id.all_time_active);
         timeActive.setChecked(geoAlarm.getTimeActive());
+
+        //Outside Active
+        outsideActive = rootView.findViewById(R.id.active_outside);
+        outsideActive.setChecked(geoAlarm.getOutsideActive());
 
         //Time
         final TextView alarmTimeLabel = rootView.findViewById(R.id.alarm_time_label);
@@ -232,6 +237,7 @@ public class GeoAlarmFragment extends Fragment {
     private void saveGeoAlarm() {
         geoAlarm.setName(alarmName.getText().toString());
         geoAlarm.setTimeActive(timeActive.isChecked());
+        geoAlarm.setOutsideActive(outsideActive.isChecked());
         if (!(timeActive.isChecked())) {
             String[] time = alarmTime.getText().toString().split(":");
             geoAlarm.setHour(Integer.parseInt(time[0]));

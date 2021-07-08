@@ -17,6 +17,7 @@
     <string name="alarm_name_label">Alarm name:</string>
     <string name="alarm_name_input_hint">Name of the Alarm</string>
     <string name="alarm_name">Name</string>
+    <string name="active_outside_label">Active when outside radius</string>
     <string name="all_time_active_label">All time active</string>
     <string name="all_days_active_label">All days active</string>
     <string name="geoalarm_time_label">Start time:</string>
@@ -64,8 +65,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">WakeApp</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_subtitle">Your geo-located alarm</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="active_outside_hint">Alarm triggers when leaving the radius</string>
     <string name="all_time_active_hint">Alarm is all time active</string>
     <string name="all_days_active_hint">Alarm is all days active</string>
     <string name="save_button_text">Save</string>

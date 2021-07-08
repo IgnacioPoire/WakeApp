@@ -216,7 +216,11 @@ public class LocationListenerService extends Service {
                     alarm.getLatLng().longitude
             );
 
-            if (distanceUserAndAlarm <= alarm.getRadius()) {
+            if (alarm.getOutsideActive()) {
+                if (distanceUserAndAlarm > alarm.getRadius()) {
+                    return triggerAlarm(alarm, index);
+                }
+            } else if (distanceUserAndAlarm <= alarm.getRadius()) {
                 return triggerAlarm(alarm, index);
             }
         }
@@ -256,7 +260,7 @@ public class LocationListenerService extends Service {
         notificationManager.notify(1, notification);
         alarm.setLastTrigger(Calendar.getInstance());
         geoAlarms.set(index, alarm);
-        //saveGeoAlarms();
+        saveGeoAlarms();
         return true;
     }
 

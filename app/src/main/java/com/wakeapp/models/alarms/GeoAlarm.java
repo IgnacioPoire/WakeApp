@@ -11,6 +11,7 @@ public class GeoAlarm implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private boolean isEnabled;
+    private boolean outsideActive;
     private boolean timeActive;
     private boolean daysActive;
     private String name;
@@ -28,6 +29,7 @@ public class GeoAlarm implements Serializable {
 
     public GeoAlarm(String name, LatLng latLng, double radius) {
         this.isEnabled = true;
+        this.outsideActive = false;
         this.timeActive = true;
         this.daysActive = true;
         this.name = name;
@@ -82,6 +84,14 @@ public class GeoAlarm implements Serializable {
 
     public void setIsEnabled(boolean value) {
         this.isEnabled = value;
+    }
+
+    public boolean getOutsideActive() {
+        return this.outsideActive;
+    }
+
+    public void setOutsideActive(boolean value) {
+        this.outsideActive = value;
     }
 
     public boolean getTimeActive() {

@@ -38,8 +38,16 @@
         android:id="@+id/alarm_sleep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:entries="@array/sleepEntries"
         android:entryValues="@array/sleepValues" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/active_outside"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/active_outside_hint"
+        android:text="@string/active_outside_label" />
 
     <View
         android:id="@+id/divider1"

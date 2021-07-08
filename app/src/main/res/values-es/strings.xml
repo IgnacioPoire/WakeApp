@@ -17,6 +17,7 @@
     <string name="alarm_name_label">Nombre de Alarma:</string>
     <string name="alarm_name_input_hint">Nombre de la Alarma</string>
     <string name="alarm_name">Nombre</string>
+    <string name="active_outside_label">Activa al salir del radio</string>
     <string name="all_time_active_label">Todo el tiempo activa</string>
     <string name="all_days_active_label">Todos los días activa</string>
     <string name="geoalarm_time_label">Tiempo de Inicio:</string>
@@ -64,8 +65,9 @@
     <string name="navigation_drawer_open">Abrir menú de navegación</string>
     <string name="navigation_drawer_close">Cerrar menú de navegación</string>
     <string name="nav_header_title">WakeApp</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_subtitle">Tu alarma geo-localizada</string>
     <string name="nav_header_desc">Cabezal de Navegación</string>
+    <string name="active_outside_hint">Alarma se activa al salir del radio</string>
     <string name="all_time_active_hint">Alarma activa todo el tiempo</string>
     <string name="all_days_active_hint">Alarma activa todos los días</string>
     <string name="save_button_text">Guardar</string>
