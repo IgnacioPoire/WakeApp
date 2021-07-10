@@ -1,11 +1,15 @@
 package com.wakeapp.models.alarms;
 
+import android.app.PendingIntent;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Alarm implements Serializable {
     private static final long serialVersionUID = 2L;
+    private static int count = 0;
 
+    private int id;
     private boolean isEnabled;
     private boolean daysActive;
     private String name;
@@ -14,12 +18,17 @@ public class Alarm implements Serializable {
     private ArrayList<Boolean> days;
 
     public Alarm(String name, int hour, int minutes, ArrayList<Boolean> days) {
+        this.id = count++;
         this.isEnabled = true;
         this.daysActive = true;
         this.name = name;
         this.timeHour = hour;
         this.timeMinutes = minutes;
         this.days = days;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {

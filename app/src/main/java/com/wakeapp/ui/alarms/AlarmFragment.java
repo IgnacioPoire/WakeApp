@@ -1,17 +1,19 @@
 package com.wakeapp.ui.alarms;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
@@ -23,6 +25,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.wakeapp.R;
+import com.wakeapp.auxiliar.AlarmReceiver;
 import com.wakeapp.models.alarms.Alarm;
 
 import java.io.File;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 
 public class AlarmFragment extends Fragment {
@@ -101,23 +105,22 @@ public class AlarmFragment extends Fragment {
         });
 
         //All Days Active
-
         daysActive = rootView.findViewById(R.id.all_days_active);
         daysActive.setChecked(alarm.getDaysActive());
 
-        tSun = (ToggleButton) rootView.findViewById(R.id.tSun);
+        tSun = rootView.findViewById(R.id.tSun);
         tSun.setChecked(alarm.getDays().get(0));
-        tMon = (ToggleButton) rootView.findViewById(R.id.tMon);
+        tMon = rootView.findViewById(R.id.tMon);
         tMon.setChecked(alarm.getDays().get(1));
-        tTue = (ToggleButton) rootView.findViewById(R.id.tTue);
+        tTue = rootView.findViewById(R.id.tTue);
         tTue.setChecked(alarm.getDays().get(2));
-        tWed = (ToggleButton) rootView.findViewById(R.id.tWed);
+        tWed = rootView.findViewById(R.id.tWed);
         tWed.setChecked(alarm.getDays().get(3));
-        tThu = (ToggleButton) rootView.findViewById(R.id.tThu);
+        tThu = rootView.findViewById(R.id.tThu);
         tThu.setChecked(alarm.getDays().get(4));
-        tFri = (ToggleButton) rootView.findViewById(R.id.tFri);
+        tFri = rootView.findViewById(R.id.tFri);
         tFri.setChecked(alarm.getDays().get(5));
-        tSat = (ToggleButton) rootView.findViewById(R.id.tSat);
+        tSat = rootView.findViewById(R.id.tSat);
         tSat.setChecked(alarm.getDays().get(6));
 
         if (daysActive.isChecked()) {
@@ -167,6 +170,7 @@ public class AlarmFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 setData();
+                setScheduledAlarm();
                 alarms.add(alarm);
                 saveAlarms();
                 navController.navigate(R.id.nav_alarms);
@@ -175,7 +179,9 @@ public class AlarmFragment extends Fragment {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                eraseAllScheduledAlarms();
                 setData();
+                setScheduledAlarm();
                 alarms.set(getArguments().getInt("ALARM_ID", 0), alarm);
                 saveAlarms();
                 navController.navigate(R.id.nav_alarms);
@@ -184,6 +190,7 @@ public class AlarmFragment extends Fragment {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                eraseAllScheduledAlarms();
                 deleteAlarm();
                 navController.navigate(R.id.nav_alarms);
             }
@@ -208,6 +215,177 @@ public class AlarmFragment extends Fragment {
             );
             alarm.setDays(days);
         }
+    }
+
+    private void setScheduledAlarm() {
+        if (!(alarm.getDaysActive())) {
+            setDaysAlarmSchedule(alarm.getDays());
+        } else {
+            setAllDaysAlarmSchedule();
+        }
+    }
+
+    private void setAllDaysAlarmSchedule() {
+        Calendar calendar = Calendar.getInstance();
+
+        Log.d("AlarmT", "Alarm Calendar set: " + alarm.getHour() + ":" + alarm.getMinutes());
+        calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
+        calendar.set(Calendar.MINUTE, alarm.getMinutes());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(getContext(),
+                        alarm.getId(),
+                        intent,
+                        0);
+
+        AlarmManager alarmManager = (AlarmManager) getContext()
+                .getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent);
+        Log.d("AlarmT", "Saved Scheduled Alarm");
+    }
+
+    private void setDaysAlarmSchedule(ArrayList<Boolean> days) {
+        for (int i = 0; i < days.size(); i++) {
+            if (days.get(i)) {
+                switch (i) {
+                    case 0:
+                        scheduleAlarm(Calendar.SUNDAY);
+                        break;
+                    case 1:
+                        scheduleAlarm(Calendar.MONDAY);
+                        break;
+                    case 2:
+                        scheduleAlarm(Calendar.TUESDAY);
+                        break;
+                    case 3:
+                        scheduleAlarm(Calendar.WEDNESDAY);
+                        break;
+                    case 4:
+                        scheduleAlarm(Calendar.THURSDAY);
+                        break;
+                    case 5:
+                        scheduleAlarm(Calendar.FRIDAY);
+                        break;
+                    case 6:
+                        scheduleAlarm(Calendar.SATURDAY);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void scheduleAlarm(int day) {
+
+        Log.d("AlarmT", "Alarm Calendar set: " + day + "at" + alarm.getHour() + ":" + alarm.getMinutes());
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, day);
+        calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
+        calendar.set(Calendar.MINUTE, alarm.getMinutes());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(getContext(),
+                        alarm.getId(),
+                        intent,
+                        0);
+
+        AlarmManager alarmManager = (AlarmManager) getContext()
+                .getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY * 7,
+                pendingIntent);
+        Log.d("AlarmT", "Saved Scheduled Day Alarm");
+    }
+
+    private void eraseAllScheduledAlarms() {
+        Alarm alarmToErase = alarms.get(getArguments().getInt("ALARM_ID", 0));
+        if (!(alarmToErase.getDaysActive())) {
+            eraseDaysAlarmSchedule(alarmToErase);
+        } else {
+            eraseAllDaysAlarmSchedule(alarmToErase);
+        }
+    }
+
+    private void eraseAllDaysAlarmSchedule(Alarm alarmToErase) {
+        Calendar calendar = Calendar.getInstance();
+
+        Log.d("AlarmT", "Alarm Calendar erase: " + alarmToErase.getHour() + ":" + alarmToErase.getMinutes());
+        calendar.set(Calendar.HOUR_OF_DAY, alarmToErase.getHour());
+        calendar.set(Calendar.MINUTE, alarmToErase.getMinutes());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(getContext(),
+                        alarmToErase.getId(),
+                        intent,
+                        0);
+
+        AlarmManager alarmManager = (AlarmManager) getContext()
+                .getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        Log.d("AlarmT", "Erased Scheduled Alarm");
+    }
+
+    private void eraseDaysAlarmSchedule(Alarm alarmToErase) {
+        ArrayList<Boolean> days = alarmToErase.getDays();
+        for (int i = 0; i < days.size(); i++) {
+            if (days.get(i)) {
+                switch (i) {
+                    case 0:
+                        eraseScheduleAlarm(Calendar.SUNDAY, alarmToErase);
+                        break;
+                    case 1:
+                        eraseScheduleAlarm(Calendar.MONDAY, alarmToErase);
+                        break;
+                    case 2:
+                        eraseScheduleAlarm(Calendar.TUESDAY, alarmToErase);
+                        break;
+                    case 3:
+                        eraseScheduleAlarm(Calendar.WEDNESDAY, alarmToErase);
+                        break;
+                    case 4:
+                        eraseScheduleAlarm(Calendar.THURSDAY, alarmToErase);
+                        break;
+                    case 5:
+                        eraseScheduleAlarm(Calendar.FRIDAY, alarmToErase);
+                        break;
+                    case 6:
+                        eraseScheduleAlarm(Calendar.SATURDAY, alarmToErase);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void eraseScheduleAlarm(int day, Alarm alarmToErase) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, day);
+        calendar.set(Calendar.HOUR_OF_DAY, alarmToErase.getHour());
+        calendar.set(Calendar.MINUTE, alarmToErase.getMinutes());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(getContext(),
+                        alarmToErase.getId(),
+                        intent,
+                        0);
+
+        AlarmManager alarmManager = (AlarmManager) getContext()
+                .getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
 
     private void saveAlarms() {

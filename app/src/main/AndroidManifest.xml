@@ -33,14 +33,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.wakeapp.PreferencesActivity"
             android:label="@string/menu_item_settings"
             android:parentActivityName="com.wakeapp.PreferencesActivity" />
+
         <activity
             android:name="com.wakeapp.HelpActivity"
             android:label="@string/menu_item_help"
             android:parentActivityName="com.wakeapp.HelpActivity" />
+
+        <receiver
+            android:name="com.wakeapp.auxiliar.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"/>
 
         <service
             android:name="com.wakeapp.services.LocationListenerService"
