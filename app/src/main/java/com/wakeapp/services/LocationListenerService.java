@@ -36,7 +36,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.wakeapp.R;
-import com.wakeapp.auxiliar.GeoAlarmReceiver;
+import com.wakeapp.auxiliar.AlarmReceiver;
 import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
@@ -230,16 +230,18 @@ public class LocationListenerService extends Service {
 
     private boolean triggerAlarm(GeoAlarm alarm, final int index) {
         Log.d("ALARM TRIGGER", "Alarm was triggered");
-
-        Intent intent = new Intent(this, GeoAlarmReceiver.class);
-        intent.setAction("ALARM_TRIGGER");
-        intent.putExtra("ALARM_NAME", alarm.getName());
-        sendBroadcast(intent);
-
         alarm.setLastTrigger(Calendar.getInstance());
         geoAlarms.set(index, alarm);
         saveGeoAlarms();
+        notificationTrigger(alarm);
         return true;
+    }
+
+    private void notificationTrigger(GeoAlarm alarm) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction("ALARM_TRIGGER");
+        intent.putExtra("ALARM_NAME", alarm.getName());
+        sendBroadcast(intent);
     }
 
     private void saveGeoAlarms() {

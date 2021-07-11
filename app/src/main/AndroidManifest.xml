@@ -47,11 +47,6 @@
         <receiver
             android:name="com.wakeapp.auxiliar.AlarmReceiver"
             android:enabled="true"
-            android:exported="true"/>
-
-        <receiver
-            android:name="com.wakeapp.auxiliar.GeoAlarmReceiver"
-            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="ALARM_TRIGGER"/>

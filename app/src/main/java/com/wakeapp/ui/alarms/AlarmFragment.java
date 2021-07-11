@@ -235,6 +235,8 @@ public class AlarmFragment extends Fragment {
         calendar.set(Calendar.MILLISECOND, 0);
 
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        intent.setAction("ALARM_TRIGGER");
+        intent.putExtra("ALARM_NAME", alarm.getName());
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(getContext(),
                         alarm.getId(),
@@ -291,6 +293,8 @@ public class AlarmFragment extends Fragment {
         calendar.set(Calendar.MILLISECOND, 0);
 
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        intent.setAction("ALARM_TRIGGER");
+        intent.putExtra("ALARM_NAME", alarm.getName());
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(getContext(),
                         alarm.getId(),
