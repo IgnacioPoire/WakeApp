@@ -2,7 +2,6 @@ package com.wakeapp.services;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,11 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.RingtoneManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -41,6 +36,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.wakeapp.R;
+import com.wakeapp.auxiliar.GeoAlarmReceiver;
 import com.wakeapp.models.alarms.GeoAlarm;
 
 import java.io.File;
@@ -59,11 +55,9 @@ public class LocationListenerService extends Service {
     //STATICS
     private static final String CLASS_NAME = "LocationListenerService";
     private static final String LOCATION_CHANNEL_ID = "LOCATION_NOTIFICATION_CHANNEL";
-    private static final String ALARM_CHANNEL_ID = "ALARM_NOTIFICATION_CHANNEL";
     private static final int LOCATION_SERVICE_ID = 175;
     private static final int LOCATION_REFRESH_TIME = 1500;
     private static final int LOCATION_FASTEST_REFRESH_TIME = 500;
-    private static final long[] VIBRATION_PATTERN = { 0, 100, 200, 300 };
 
     //BINDER TO ACTIVITY
     private final IBinder mBinder = new LocationListenerServiceBinder();
@@ -237,54 +231,15 @@ public class LocationListenerService extends Service {
     private boolean triggerAlarm(GeoAlarm alarm, final int index) {
         Log.d("ALARM TRIGGER", "Alarm was triggered");
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        checkAlarmChannel(notificationManager);
+        Intent intent = new Intent(this, GeoAlarmReceiver.class);
+        intent.setAction("ALARM_TRIGGER");
+        intent.putExtra("ALARM_NAME", alarm.getName());
+        sendBroadcast(intent);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(
-                getApplicationContext(),
-                ALARM_CHANNEL_ID
-        );
-        Notification notification = builder.setSmallIcon(R.drawable.ic_wakeapp_icon)
-                .setColor(getResources().getColor(R.color.colorAccent))
-                .setContentTitle(getString(R.string.geoalarm_trigger))
-                .setContentText(alarm.getName())
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), AudioManager.STREAM_ALARM)
-                .setOnlyAlertOnce(true)
-                .setVibrate(VIBRATION_PATTERN)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .build();
-
-        notificationManager.notify(1, notification);
         alarm.setLastTrigger(Calendar.getInstance());
         geoAlarms.set(index, alarm);
         saveGeoAlarms();
         return true;
-    }
-
-    private void checkAlarmChannel(NotificationManager notificationManager) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager != null && notificationManager.getNotificationChannel(ALARM_CHANNEL_ID) == null) {
-                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .build();
-                NotificationChannel notificationChannel = new NotificationChannel(
-                        ALARM_CHANNEL_ID,
-                        "Alarm Channel",
-                        NotificationManager.IMPORTANCE_HIGH
-                );
-                notificationChannel.setDescription("This channel is used by the geo-alarms");
-                notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.RED);
-                notificationChannel.enableVibration(true);
-                notificationChannel.setVibrationPattern(VIBRATION_PATTERN);
-                notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
-        }
     }
 
     private void saveGeoAlarms() {

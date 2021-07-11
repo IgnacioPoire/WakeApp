@@ -49,6 +49,16 @@
             android:enabled="true"
             android:exported="true"/>
 
+        <receiver
+            android:name="com.wakeapp.auxiliar.GeoAlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ALARM_TRIGGER"/>
+                <action android:name="DISMISS_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.wakeapp.services.LocationListenerService"
             android:stopWithTask="false"/>
