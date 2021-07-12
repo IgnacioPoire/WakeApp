@@ -61,19 +61,26 @@ public class AlarmReceiver extends BroadcastReceiver {
                 context,
                 ALARM_CHANNEL_ID
         );
-        Notification notification = builder.setSmallIcon(R.drawable.ic_wakeapp_icon)
-                .setColor(context.getResources().getColor(R.color.colorAccent))
-                .setContentTitle(context.getString(R.string.geoalarm_trigger))
-                .setContentText(intent.getExtras().getString("ALARM_NAME"))
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setOnlyAlertOnce(true)
-                .setVibrate(VIBRATION_PATTERN)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setDeleteIntent(getDeleteIntent(context))
-                .build();
 
+        builder.setSmallIcon(R.drawable.ic_wakeapp_icon)
+            .setColor(context.getResources().getColor(R.color.colorAccent))
+            .setContentText(intent.getExtras().getString("ALARM_NAME"))
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOnlyAlertOnce(true)
+            .setVibrate(VIBRATION_PATTERN)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setDeleteIntent(getDeleteIntent(context));
+
+        String alarmType = intent.getExtras().getString("ALARM_TYPE");
+        if ("GEO_ALARM".equals(alarmType)) {
+            builder.setContentTitle(context.getString(R.string.geoalarm_trigger));
+        } else {
+            builder.setContentTitle(context.getString(R.string.alarm_trigger));
+        }
+
+        Notification notification = builder.build();
         notificationManager.notify(1, notification);
     }
 

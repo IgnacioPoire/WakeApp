@@ -237,6 +237,7 @@ public class AlarmFragment extends Fragment {
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
         intent.setAction("ALARM_TRIGGER");
         intent.putExtra("ALARM_NAME", alarm.getName());
+        intent.putExtra("ALARM_TYPE", "ALARM");
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(getContext(),
                         alarm.getId(),
@@ -295,6 +296,7 @@ public class AlarmFragment extends Fragment {
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
         intent.setAction("ALARM_TRIGGER");
         intent.putExtra("ALARM_NAME", alarm.getName());
+        intent.putExtra("ALARM_TYPE", "ALARM");
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(getContext(),
                         alarm.getId(),

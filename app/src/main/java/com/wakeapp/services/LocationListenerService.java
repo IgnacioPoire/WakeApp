@@ -241,6 +241,7 @@ public class LocationListenerService extends Service {
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.setAction("ALARM_TRIGGER");
         intent.putExtra("ALARM_NAME", alarm.getName());
+        intent.putExtra("ALARM_TYPE", "GEO_ALARM");
         sendBroadcast(intent);
     }
 

@@ -78,4 +78,5 @@
     <string name="geo_alarms_label">Geo-Alarms:</string>
     <string name="alarms_label">Alarms:</string>
     <string name="geoalarm_trigger">Geo-Alarm triggered:</string>
+    <string name="alarm_trigger">Alarm triggered:</string>
 </resources>
