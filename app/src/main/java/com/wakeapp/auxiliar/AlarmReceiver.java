@@ -7,6 +7,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -14,9 +17,13 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.preference.PreferenceManager;
 
 import com.wakeapp.R;
+
+import java.util.Locale;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
@@ -24,9 +31,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static final String ALARM_CHANNEL_ID = "ALARM_NOTIFICATION_CHANNEL";
     private static final long[] VIBRATION_PATTERN = { 0, 100, 200, 300 };
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        loadLocalization(context);
         if (action.equals("ALARM_TRIGGER"))
         {
             if (mediaPlayer == null) {
@@ -112,5 +121,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction("DISMISS_NOTIFICATION");
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void loadLocalization(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String appLanguage = sp.getString("appLanguage", "en");
+        Locale locale = new Locale(appLanguage);
+        Locale.setDefault(locale);
+        Resources resources = context.getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 }

@@ -77,6 +77,6 @@
     <string name="add_alarm_button">Agregar una Alarma</string>
     <string name="geo_alarms_label">Geo-Alarmas:</string>
     <string name="alarms_label">Alarmas:</string>
-    <string name="geoalarm_trigger">Geo-Alarm activada:</string>
+    <string name="geoalarm_trigger">Geo-Alarma activada:</string>
     <string name="alarm_trigger">Alarma activada:</string>
 </resources>
