@@ -63,7 +63,9 @@ public class AlarmFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final View rootView = inflater.inflate(R.layout.fragment_alarm, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_alarm,
+                container,
+                false);
 
         alarms = (ArrayList<Alarm>) getArguments().getSerializable("alarms_list");
         alarmId = getArguments().getInt("ALARM_ID", -1);
@@ -93,7 +95,8 @@ public class AlarmFragment extends Fragment {
         alarmTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                timePickerDialog = new TimePickerDialog(requireActivity(),
+                        new TimePickerDialog.OnTimeSetListener() {
                     @SuppressLint("DefaultLocale")
                     @Override
                     public void onTimeSet(TimePicker view, int hours, int minutes) {
@@ -228,23 +231,26 @@ public class AlarmFragment extends Fragment {
     private void setAllDaysAlarmSchedule() {
         Calendar calendar = Calendar.getInstance();
 
-        Log.d("AlarmT", "Alarm Calendar set: " + alarm.getHour() + ":" + alarm.getMinutes());
+        Log.d("AlarmT",
+                "Alarm Calendar set: "
+                + alarm.getHour() + ":"
+                + alarm.getMinutes());
         calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
         calendar.set(Calendar.MINUTE, alarm.getMinutes());
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        Intent intent = new Intent(requireContext(), AlarmReceiver.class);
         intent.setAction("ALARM_TRIGGER");
         intent.putExtra("ALARM_NAME", alarm.getName());
         intent.putExtra("ALARM_TYPE", "ALARM");
         PendingIntent pendingIntent = PendingIntent
-                .getBroadcast(getContext(),
+                .getBroadcast(requireContext(),
                         alarm.getId(),
                         intent,
                         0);
 
-        AlarmManager alarmManager = (AlarmManager) getContext()
+        AlarmManager alarmManager = (AlarmManager) requireContext()
                 .getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(),
@@ -285,7 +291,8 @@ public class AlarmFragment extends Fragment {
 
     private void scheduleAlarm(int day) {
 
-        Log.d("AlarmT", "Alarm Calendar set: " + day + "at" + alarm.getHour() + ":" + alarm.getMinutes());
+        Log.d("AlarmT", "Alarm Calendar set: "
+                + day + "at" + alarm.getHour() + ":" + alarm.getMinutes());
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK, day);
         calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
@@ -293,17 +300,17 @@ public class AlarmFragment extends Fragment {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        Intent intent = new Intent(requireContext(), AlarmReceiver.class);
         intent.setAction("ALARM_TRIGGER");
         intent.putExtra("ALARM_NAME", alarm.getName());
         intent.putExtra("ALARM_TYPE", "ALARM");
         PendingIntent pendingIntent = PendingIntent
-                .getBroadcast(getContext(),
+                .getBroadcast(requireContext(),
                         alarm.getId(),
                         intent,
                         0);
 
-        AlarmManager alarmManager = (AlarmManager) getContext()
+        AlarmManager alarmManager = (AlarmManager) requireContext()
                 .getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(),
@@ -324,20 +331,21 @@ public class AlarmFragment extends Fragment {
     private void eraseAllDaysAlarmSchedule(Alarm alarmToErase) {
         Calendar calendar = Calendar.getInstance();
 
-        Log.d("AlarmT", "Alarm Calendar erase: " + alarmToErase.getHour() + ":" + alarmToErase.getMinutes());
+        Log.d("AlarmT", "Alarm Calendar erase: "
+                + alarmToErase.getHour() + ":" + alarmToErase.getMinutes());
         calendar.set(Calendar.HOUR_OF_DAY, alarmToErase.getHour());
         calendar.set(Calendar.MINUTE, alarmToErase.getMinutes());
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        Intent intent = new Intent(requireContext(), AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent
-                .getBroadcast(getContext(),
+                .getBroadcast(requireContext(),
                         alarmToErase.getId(),
                         intent,
                         0);
 
-        AlarmManager alarmManager = (AlarmManager) getContext()
+        AlarmManager alarmManager = (AlarmManager) requireContext()
                 .getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         Log.d("AlarmT", "Erased Scheduled Alarm");
@@ -382,14 +390,14 @@ public class AlarmFragment extends Fragment {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        Intent intent = new Intent(requireContext(), AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent
-                .getBroadcast(getContext(),
+                .getBroadcast(requireContext(),
                         alarmToErase.getId(),
                         intent,
                         0);
 
-        AlarmManager alarmManager = (AlarmManager) getContext()
+        AlarmManager alarmManager = (AlarmManager) requireContext()
                 .getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
     }
@@ -397,7 +405,8 @@ public class AlarmFragment extends Fragment {
     private void saveAlarms() {
         try {
             checkFileExists();
-            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+            File alarmFile = new File(requireActivity()
+                    .getExternalFilesDir(null) + "/alarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(alarms);
@@ -416,7 +425,8 @@ public class AlarmFragment extends Fragment {
     }
 
     private void checkFileExists() {
-        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+        File alarmFile = new File(requireActivity()
+                .getExternalFilesDir(null) + "/alarms.txt");
         try {
             if(!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
@@ -435,7 +445,8 @@ public class AlarmFragment extends Fragment {
         alarms.remove(getArguments().getInt("ALARM_ID", 0));
         try {
             checkFileExists();
-            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/alarms.txt");
+            File alarmFile = new File(requireActivity()
+                    .getExternalFilesDir(null) + "/alarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(alarms);

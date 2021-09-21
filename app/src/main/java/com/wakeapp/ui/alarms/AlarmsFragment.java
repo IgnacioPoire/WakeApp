@@ -52,7 +52,9 @@ public class AlarmsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_alarms, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_alarms,
+                container,
+                false);
         geoAlarmList = rootView.findViewById(R.id.geoAlarmList);
         alarmList = rootView.findViewById(R.id.alarmList);
         addButton = rootView.findViewById(R.id.addButton);
@@ -72,10 +74,10 @@ public class AlarmsFragment extends Fragment {
             rootView.findViewById(R.id.alarms).setVisibility(View.GONE);
         }
 
-        ArrayAdapter arrayGeoAdapter = new ArrayAdapter(getActivity().getApplicationContext(),
+        ArrayAdapter arrayGeoAdapter = new ArrayAdapter(requireContext(),
                 android.R.layout.simple_list_item_1, geoAlarmsStrings);
         geoAlarmList.setAdapter(arrayGeoAdapter);
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getActivity().getApplicationContext(),
+        ArrayAdapter arrayAdapter = new ArrayAdapter(requireContext(),
                 android.R.layout.simple_list_item_1, alarmsStrings);
         alarmList.setAdapter(arrayAdapter);
 

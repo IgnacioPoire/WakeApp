@@ -47,7 +47,9 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements VariableInterface, OnRequestPermissionsResultCallback {
+public class MainActivity
+        extends AppCompatActivity
+        implements VariableInterface, OnRequestPermissionsResultCallback {
 
     //STATICS
     private static final String CLASS_NAME = "MainActivity";
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     };
 
     @SuppressLint("ResourceType")
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         loadTheme();
@@ -111,7 +113,10 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         trackingMenuItemConfig(navigationView);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupActionBarWithNavController(
+                this,
+                navController,
+                mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
@@ -144,11 +149,11 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration config) {
         Intent intent = getIntent();
         finish();
         startActivity(intent);
-        super.onConfigurationChanged(newConfig);
+        super.onConfigurationChanged(config);
     }
 
     private void trackingMenuItemConfig(NavigationView navigationView) {
@@ -171,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
         });
 
         trackingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @RequiresApi(api = Build.VERSION_CODES.Q)
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -188,18 +193,24 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     //STARTUP PERMISSIONS CHECK
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @RequiresApi(api = Build.VERSION_CODES.P)
     public boolean checkMyPermissions() {
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            || checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+            || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+            || checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)
+                != PackageManager.PERMISSION_GRANTED) {
 
             ArrayList<String> permissions = new ArrayList<>();
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            } else if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            } else if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            } else if (checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+            } else if (checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)
+                    != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(Manifest.permission.FOREGROUND_SERVICE);
             }
 
@@ -212,9 +223,11 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     }
 
     //ON PERMISSION RESULT
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         ArrayList<String> permissionsArray = new ArrayList<>();
@@ -241,7 +254,9 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavController navController = Navigation.findNavController(
+                this,
+                R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
@@ -367,7 +382,8 @@ public class MainActivity extends AppCompatActivity implements VariableInterface
     private void startLocationListenerService() {
 
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+        for (ActivityManager.RunningServiceInfo service
+                : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (LocationListenerService.class.getName().equals(service.service.getClassName())) {
                 Log.d(CLASS_NAME, "FETCHING LOCATION LISTENER SERVICE...");
                 bindService(new Intent(this, LocationListenerService.class),

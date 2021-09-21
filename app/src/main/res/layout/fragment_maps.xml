@@ -26,10 +26,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/seekBar_margin"
-        android:thumbTint="?colorButtonNormal"
-        android:progressTint="?colorButtonNormal"
         android:progressBackgroundTint="?colorButtonNormal"
-        app:borderWidth="3dp"
+        android:progressTint="?colorButtonNormal"
+        android:thumbTint="?colorButtonNormal"
+        android:visibility="gone"
+        app:borderWidth="3dp" />
+
+    <TextView
+        android:id="@+id/radiusBarScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="@dimen/seekBarScore_margin"
+        android:textColor="?colorButtonNormal"
         android:visibility="gone" />
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton

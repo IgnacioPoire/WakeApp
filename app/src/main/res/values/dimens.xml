@@ -7,6 +7,7 @@
     <dimen name="searchButton_margin">16dp</dimen>
     <dimen name="addButton_margin">20dp</dimen>
     <dimen name="seekBar_margin">36dp</dimen>
+    <dimen name="seekBarScore_margin">48dp</dimen>
     <dimen name="autocomplete_vertical_size">32dp</dimen>
     <dimen name="autocomplete_margin">8dp</dimen>
 </resources>

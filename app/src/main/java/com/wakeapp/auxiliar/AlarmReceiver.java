@@ -95,7 +95,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private void checkAlarmChannel(NotificationManager notificationManager) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager != null && notificationManager.getNotificationChannel(ALARM_CHANNEL_ID) == null) {
+            if (notificationManager != null
+                    && notificationManager.getNotificationChannel(ALARM_CHANNEL_ID) == null) {
                 AudioAttributes audioAttributes = new AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setUsage(AudioAttributes.USAGE_ALARM)
@@ -110,7 +111,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 notificationChannel.setLightColor(Color.RED);
                 notificationChannel.enableVibration(true);
                 notificationChannel.setVibrationPattern(VIBRATION_PATTERN);
-                notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
+                notificationChannel.setSound(
+                        RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
+                        audioAttributes);
                 notificationManager.createNotificationChannel(notificationChannel);
             }
         }
@@ -120,7 +123,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction("DISMISS_NOTIFICATION");
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context,
+                0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

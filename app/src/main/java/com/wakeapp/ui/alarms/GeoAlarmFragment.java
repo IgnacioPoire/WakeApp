@@ -85,7 +85,9 @@ public class GeoAlarmFragment extends Fragment {
                                 ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final View rootView = inflater.inflate(R.layout.fragment_geo_alarm, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_geo_alarm,
+                container,
+                false);
 
         geoAlarms = (ArrayList<GeoAlarm>) getArguments().getSerializable("alarms_list");
         geoAlarm = geoAlarms.get(getArguments().getInt("ALARM_ID", 0));
@@ -111,7 +113,8 @@ public class GeoAlarmFragment extends Fragment {
         alarmTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                timePickerDialog = new TimePickerDialog(requireActivity(),
+                        new TimePickerDialog.OnTimeSetListener() {
                     @SuppressLint("DefaultLocale")
                     @Override
                     public void onTimeSet(TimePicker view, int hours, int minutes) {
@@ -125,7 +128,8 @@ public class GeoAlarmFragment extends Fragment {
         final TextView alarmIntervalLabel = rootView.findViewById(R.id.alarm_interval_label);
         alarmInterval = (Spinner) rootView.findViewById(R.id.alarm_interval);
         if (geoAlarm.getInterval() != 0) {
-            alarmInterval.setSelection(getKeyOfValue(geoAlarm.getInterval(), "intervalValues"));
+            alarmInterval.setSelection(
+                    getKeyOfValue(geoAlarm.getInterval(), "intervalValues"));
         }
 
         alarmSleep = (Spinner) rootView.findViewById(R.id.alarm_sleep);
@@ -271,7 +275,8 @@ public class GeoAlarmFragment extends Fragment {
         geoAlarms.set(getArguments().getInt("ALARM_ID", 0), geoAlarm);
         try {
             checkFileExists();
-            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
+            File alarmFile = new File(requireActivity()
+                    .getExternalFilesDir(null) + "/geoalarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(geoAlarms);
@@ -293,13 +298,13 @@ public class GeoAlarmFragment extends Fragment {
         String[] stringNames = getResources().getStringArray(
                 getResources().getIdentifier(resName,
                 "array",
-                getActivity().getPackageName()
+                        requireActivity().getPackageName()
         ));
 
         String[] stringValues = getResources().getStringArray(
                 getResources().getIdentifier(resValue,
                 "array",
-                getActivity().getPackageName()
+                        requireActivity().getPackageName()
         ));
 
         return Integer.parseInt(stringValues[Arrays.asList(stringNames).indexOf(selected)]);
@@ -309,14 +314,15 @@ public class GeoAlarmFragment extends Fragment {
         String[] stringValues = getResources().getStringArray(
                 getResources().getIdentifier(resValue,
                         "array",
-                        getActivity().getPackageName()
+                        requireActivity().getPackageName()
                 ));
 
         return Arrays.asList(stringValues).indexOf(String.valueOf(selected));
     }
 
     private void checkFileExists() {
-        File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
+        File alarmFile = new File(requireActivity()
+                .getExternalFilesDir(null) + "/geoalarms.txt");
         try {
             if(!alarmFile.exists()) {
                 alarmFile.getParentFile().mkdirs();
@@ -335,7 +341,8 @@ public class GeoAlarmFragment extends Fragment {
         geoAlarms.remove(getArguments().getInt("ALARM_ID", 0));
         try {
             checkFileExists();
-            File alarmFile = new File(getActivity().getExternalFilesDir(null) + "/geoalarms.txt");
+            File alarmFile = new File(requireActivity()
+                    .getExternalFilesDir(null) + "/geoalarms.txt");
             FileOutputStream fos = new FileOutputStream(alarmFile);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(geoAlarms);

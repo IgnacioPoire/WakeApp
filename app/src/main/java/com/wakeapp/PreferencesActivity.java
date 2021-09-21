@@ -69,7 +69,8 @@ public class PreferencesActivity extends AppCompatActivity {
         }
 
         private void loadSettings() {
-            final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            final SharedPreferences sp = PreferenceManager
+                    .getDefaultSharedPreferences(requireActivity());
             @SuppressLint("CommitPrefEdits") final SharedPreferences.Editor editor = sp.edit();
 
             ListPreference LPMT = findPreference("styleType");
@@ -114,33 +115,40 @@ public class PreferencesActivity extends AppCompatActivity {
         }
 
         private void restartActivity() {
-            getActivity().finish();
-            Intent i = new Intent(getContext(), MainActivity.class);
+            requireActivity().finish();
+            Intent i = new Intent(requireContext(), MainActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
-            getActivity().overridePendingTransition(0, 0);
+            requireActivity().overridePendingTransition(0, 0);
         }
 
         @Override
         public boolean onPreferenceTreeClick(Preference preference) {
             if (preference.getKey().equals("alarmRingtone")) {
                 Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE,
+                        RingtoneManager.TYPE_NOTIFICATION);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT,
+                        true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT,
+                        true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
+                        Settings.System.DEFAULT_NOTIFICATION_URI);
 
                 String existingValue = GetRingtonePreferenceValue();
                 if (existingValue != null) {
                     if (existingValue.length() == 0) {
                         // Select "Silent"
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, (Uri) null);
+                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                                (Uri) null);
                     } else {
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue));
+                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                                Uri.parse(existingValue));
                     }
                 } else {
                     // No ringtone has been selected, set to the default
-                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                            Settings.System.DEFAULT_NOTIFICATION_URI);
                 }
 
                 startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE);
@@ -166,16 +174,17 @@ public class PreferencesActivity extends AppCompatActivity {
 
         private void SetRingtonePreferenceValue(String ringtone)
         {
-            Context context = getActivity();
-            assert context != null;
-            context.getSharedPreferences("alarmRingtone", Context.MODE_PRIVATE).edit().putString("alarmRingtone", ringtone).apply();
+            Context context = requireActivity();
+            context.getSharedPreferences("alarmRingtone",
+                    Context.MODE_PRIVATE).edit().putString("alarmRingtone", ringtone).apply();
         }
 
         private String GetRingtonePreferenceValue()
         {
-            Context context = getActivity();
-            assert context != null;
-            return context.getSharedPreferences("alarmRingtone", Context.MODE_PRIVATE).getString("alarmRingtone", "content://settings/system/notification_sound");
+            Context context = requireActivity();
+            return context.getSharedPreferences("alarmRingtone",
+                    Context.MODE_PRIVATE).getString("alarmRingtone",
+                    "content://settings/system/notification_sound");
         }
     }
 }

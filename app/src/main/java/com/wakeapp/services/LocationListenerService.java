@@ -339,7 +339,7 @@ public class LocationListenerService extends Service {
     }
 
     //STOP LOCATION UPDATES
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void stopLocationUpdates() {
         unregisterReceiver(tickReceiver);
         LocationServices.getFusedLocationProviderClient(this).removeLocationUpdates(locationCallback);
@@ -411,7 +411,7 @@ public class LocationListenerService extends Service {
         return userLocation;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void stopService() {
         this.stopLocationUpdates();
     }
