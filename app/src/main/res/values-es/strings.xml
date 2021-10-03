@@ -5,7 +5,74 @@
     <string name="menu_item_settings">Opciones</string>
     <string name="menu_item_help">Ayuda</string>
     <!-- Help Strings -->
-    <string name="helpText">Texto de ayuda</string>
+    <string name="helpText"><big><b><u>Menú Lateral</u></b></big>\n
+    Presionando el botón hamburguesa en la esquina superior izquierda accede a las opciones del Menú
+    Lateral:\n\n
+    <b>- Opción Mapa:</b> Permite acceder a la Pantalla Mapa.\n
+    <b>- Opción Alarmas:</b> Permite acceder a la Pantalla Alarmas.\n
+    <b>- Opción Rastreo:</b> Permite encender o apagar el seguimiento en tiempo real de la
+    ubicación del usuario.\n\n
+    <big><b><u>Pantalla Mapa</u></b></big>\n
+    Esta Pantalla Mapa muestra una representación en tiempo real de la ubicación del usuario y de
+    las Geo-Alarmas configuradas por tal, junto con sus respectivos radios de activación.\n\n
+    <b>- Ubicación del Usuario:</b> La ubicación del usuario, representada con una flecha rojiza.\n
+    <b>- Establecer Alarma:</b> Para establecer una Alarma presione en cualquier ubicación del mapa
+    donde desee establecer tal Alarma o utilice el botón de búsqueda en la parte inferior de la
+    pantalla para buscar una ubicación donde establecer tal Alarma.\n
+    <b>Una vez que la Ubicación de la Alarma fue establecida:</b>\n
+        - Cancelela presionando otra parte del mapa.\n
+        - Confirme la Alarma estableciendo el radio de activación a partir de la barra presente en
+        la parte inferior de la pantalla.\n\n
+    <big><b><u>Pantalla Alarmas</u></b></big>\n
+    La Pantalla Alarmas muestra un listado de las Geo-Alarmas y Alarmas actualmente configuradas por
+    el usuario. Desde esta pantalla se pueden editar y eliminar Geo-Alarmas y Alarmas (Permitiendo
+    también la creación de éstas últimas):\n\n
+    <b>- Crear una Alarma:</b> Para crear una Alarma presione el botón en la esquina inferior
+    derecha representado con un ícono \"+\".\n
+    <b>- Editar o eliminar una Geo-Alarma:</b> Para editar o eliminar una Geo-Alarma presione en el
+    nombre de tal Geo-Alarma en el listado de Geo-Alarmas de la pantalla (Luego de haberla creado
+    desde la Pantalla Mapa).\n
+    <b>- Editar o eliminar una Alarma:</b> Para editar o eliminar una Alarma presione en el
+    nombre de tal Alarma en el listado de Alarmas de la pantalla (Luego de haberla creado
+    desde el botón en la esquina inferior derecha de la misma pantalla).\n\n
+    <big><b><u>Formulario de Creación / Edición / Eliminación de Alarma</u></b></big>\n
+    Presionando el botón \"+\"  en la esquina inferior derecha de la Pantalla Alarmas puede acceder
+    al Formulario para la Creación de una Alarma o presionando el nombre de una Alarma en el Listado
+    de Alarmas para acceder al Formulario de Edición y Eliminación de tal Alarma:\n\n
+    <b>- Nombre de Alarma:</b> Representa el nombre de la Alarma.\n
+    <b>- Tiempo de Activación:</b> Indica el horario en un formato de 24 horas en el que la alarma
+    se activará.\n
+    <b>- Todos los días activa:</b> Botón de activación que indica si la Alarma se activa todos los
+    días de la semana (Si tal opción se encuentra desactivada, un botón de activación por cada día
+    de la semana se mostrará en pantalla para que el usuario configure el/los días activos).\n\n
+    <big><b><u>Formulario de Edición / Eliminación de Geo-Alarma</u></b></big>\n
+    Presionando el nombre de una Geo-Alarma en el listado de Geo-Alarmas se accederá a la pantalla
+    para la eliminación o edición de tal instancia seleccionada.\n\n
+    <b>- Nombre de Alarma:</b> Representa el nombre de la Geo-Alarma.\n
+    <b>- Tiempo Deshabilitada:</b> Indica el intervalo de tiempo requerido a pasar entre una y otra
+    activación de la Geo-Alarma.\n
+    <b>- Activa al salir del radio:</b> Cuando se encuentra habilitada la opción, la Geo-Alarma se
+    activará cuando el usuario se encuentre fuera del radio indicado en vez de dentro de tal.\n
+    <b>- Todo el tiempo activa:</b> Cuando se encuentra habilitada la opción la Geo-Alarma se
+    activará en todo momento siempre y cuando el usuario se encuentre en el radio de activación de
+    la alarma (Si se encuentra deshabilitada la opción, un campo indicando el Tiempo de Inicio desde
+    donde se encontrará activa la Geo-Alarma y el Tiempo de Intervalo representando el rango de
+    tiempo desde éste Tiempo de Inicio en el que la Geo-Alarma se activará se mostrarán en pantalla
+    para que el usuario los configure).\n
+    <b>- Todos los días activa:</b> Botón de activación que indica si la Alarma se activa todos los
+    días de la semana (Si tal opción se encuentra desactivada, un botón de activación por cada día
+    de la semana se mostrará en pantalla para que el usuario configure el/los días activos).\n\n
+    <big><b><u>Pantalla de Opciones</u></b></big>\n
+    Para acceder a la Pantalla de Opciones presione los tres puntos en la esquina superior derecha
+    en cualquier momento y la opción \"Opciones\" en la lista de opciones presentada:\n\n
+    <b>- Tono de la Alarma:</b> Elige un tono personalizado para tus Alarmas.\n
+    <b>- Estilo de la Aplicación:</b> Elige el estilo de la interfaz que más se adapte a tu
+    gusto.\n
+    <b>- Idioma:</b> Elige tu idioma preferido para la aplicación.\n\n
+    <big><b><u>Pantalla de Ayuda</u></b></big>\n
+    Para acceder a ésta Pantalla de Ayuda presione los tres puntos en la esquina superior derecha
+    en cualquier momento y la opción \"Ayuda\" en la lista de opciones presentada.
+    </string>
     <!-- Side Menu Strings -->
     <string name="menu_maps">Mapa</string>
     <string name="menu_geo_alarm">Geo-Alarma</string>
@@ -50,9 +117,9 @@
     <string name="settings_alarm_title">Tono de la Alarma</string>
     <string name="settings_alarm_desc">Elige un tono personalizado para\n tus Alarmas.</string>
     <string name="settings_style_title">Estilo de la Aplicación</string>
-    <string name="settings_style_desc">Elige el estilo de la aplicación \nque más se adapta a tu gusto.</string>
-    <string name="settings_lang_title">Lenguaje</string>
-    <string name="settings_lang_desc">Elige tu lenguaje preferido para\n la aplicación.</string>
+    <string name="settings_style_desc">Elige el estilo de la aplicación \nque más se adapte a tu gusto.</string>
+    <string name="settings_lang_title">Idioma</string>
+    <string name="settings_lang_desc">Elige tu idioma preferido para\n la aplicación.</string>
     <string name="standard_style">Estandar</string>
     <string name="vintage_style">Vintage</string>
     <string name="dark_style">Oscuro</string>

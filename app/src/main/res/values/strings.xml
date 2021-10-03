@@ -5,7 +5,68 @@
     <string name="menu_item_settings">Settings</string>
     <string name="menu_item_help">Help</string>
     <!-- Help Strings -->
-    <string name="helpText">Help text</string>
+    <string name="helpText"><big><b><u>Side Menu</u></b></big>\n
+    By pressing the burger button on the top left corner you may access the Side Menu Options:\n\n
+    <b>- Map Option:</b> Allows access to the Map Screen.\n
+    <b>- Alarms Option:</b> Allows access to the Alarms Screen.\n
+    <b>- Tracking Option:</b> Allows to turn on/off the real-time tracking of the user location.\n\n
+    <big><b><u>Map Screen</u></b></big>\n
+    The Map Screen shows a representation of the real-time location of the user and the established
+    Geo-Alarms with their respective trigger radius.\n\n
+    <b>- User Location:</b> The current user location, represented by a reddish arrow.\n
+    <b>- Set Alarm:</b> In order to set an alarm press a location on the map where you want the
+    alarm to be located or use the search button at the bottom of the screen to find a place
+    where to locate the alarm.\n
+    <b>Once the alarm location has been established:</b>\n
+        - Cancel it by pressing another place on the map.\n
+        - Confirm the alarm by using the bar at the bottom of the screen that has appeared
+        to determinate the radius of such alarm.\n\n
+    <big><b><u>Alarms Screen</u></b></big>\n
+    The Alarms Screen shows a list of the currently saved Geo-Alarms and Alarms the user has
+    created. From this screen the user may edit or delete both Geo-Alarms and Alarms (Allowing to
+    also create this last ones):\n\n
+    <b>- Create an Alarm:</b> In order to create an Alarm press on the bottom right button of this
+    screen with a \"+\" icon.\n
+    <b>- Edit or Delete a Geo-Alarm:</b> In order to edit or delete a Geo-Alarm press on the name
+    of such Geo-Alarm on the list of Geo-Alarms of this screen (After creating it from the Map
+    Screen).\n
+    <b>- Edit or Delete an Alarm:</b> In order to edit or delete an Alarm press on the name
+    of such Alarm on the list of Alarms of this screen (After creating it from the bottom right
+    button of this same screen).\n\n
+    <big><b><u>Alarm Creation / Edit / Delete Form</u></b></big>\n
+    By pressing the \"+\" button on the bottom right corner of the Alarms Screen you may access this
+    form to create a new Alarm, or by pressing the name of an Alarm in the Alarms List in order to
+    Edit or Delete it:\n\n
+    <b>- Alarm name:</b> Represents the name of the Alarm.\n
+    <b>- Trigger time:</b> Indicates the time in a 24 hour format when the Alarm will trigger.\n
+    <b>- All days active:</b> Toggle button which indicates if the Alarm triggers all days of the
+    week (If such is turn off, a toggle for each day of week will be displayed for the user to
+    configure the active day/s).\n\n
+    <big><b><u>Geo-Alarm Edit / Delete Form</u></b></big>\n
+    By pressing the name of a Geo-Alarm on the list you may access the form of such Geo-Alarm in
+    order to edit or delete it.\n\n
+    <b>- Alarm name:</b> Represents the name of the Geo-Alarm.\n
+    <b>- Sleep time:</b> Indicates the interval of time needed to pass in order for the Geo-Alarm
+    to be once again triggered.\n
+    <b>- Active when outside radius:</b> When active the Geo-Alarm will trigger when the user is
+    outside the radius instead of being inside of it.\n
+    <b>- All time active:</b> When active the Geo-Alarm will trigger at any time as long as the user
+    is in the trigger area for such alarm (If disabled, a field indicating the Start time for the
+    alarm to start being active and an Interval time representing the time from this Start time when
+    the Geo-Alarm can be triggered will be displayed).\n
+    <b>- All days active:</b> Toggle button which indicates if the Alarm triggers all days of the
+    week (If such is turn off, a toggle for each day of week will be displayed for the user to
+    configure the active day/s).\n\n
+    <big><b><u>Settings Screen</u></b></big>\n
+    Access the Settings Screen by pressing the three dots at the top right corner at any time and
+    the \"Settings\" option on the displayed options list:\n\n
+    <b>- Alarm Ringtone:</b> Choose a personalized ringtone for your alarms.\n
+    <b>- Alarm Style:</b> Choose the interface style that suits your liking.\n
+    <b>- Language:</b> Choose your preferred app language.\n\n
+    <big><b><u>Help Screen</u></b></big>\n
+    Access this Help Screen by pressing the three dots at the top right corner at any time and the
+    \"Help\" option on the displayed options list.
+    </string>
     <!-- Side Menu Strings -->
     <string name="menu_maps">Map</string>
     <string name="menu_geo_alarm">Geo-Alarm</string>
@@ -50,7 +111,7 @@
     <string name="settings_alarm_title">Alarm Ringtone</string>
     <string name="settings_alarm_desc">Choose a personalized ringtone for \nyour alarms.</string>
     <string name="settings_style_title">App Style</string>
-    <string name="settings_style_desc">Choose the app style that suits \nmore your liking.</string>
+    <string name="settings_style_desc">Choose the app style that suits your \nliking.</string>
     <string name="settings_lang_title">Language</string>
     <string name="settings_lang_desc">Choose your preferred app language.</string>
     <string name="standard_style">Standard</string>

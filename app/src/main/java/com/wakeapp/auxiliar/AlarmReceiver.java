@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
@@ -54,9 +55,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void triggerNotification(Context context, Intent intent) {
-        mediaPlayer = MediaPlayer.create(context,
-                Settings.System.DEFAULT_RINGTONE_URI);
+        mediaPlayer = MediaPlayer.create(context, loadRingtone(context));
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
         buildNotification(context, intent);
     }
@@ -139,5 +141,18 @@ public class AlarmReceiver extends BroadcastReceiver {
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private Uri loadRingtone(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String alarmRingtone = sp.getString("alarmRingtone", null);
+        Uri alarmUri = alarmRingtone != null ? Uri.parse(alarmRingtone) : null;
+
+        if (alarmUri != null) {
+            return alarmUri;
+        } else {
+            return Settings.System.DEFAULT_RINGTONE_URI;
+        }
     }
 }

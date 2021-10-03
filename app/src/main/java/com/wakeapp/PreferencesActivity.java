@@ -13,7 +13,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.ListPreference;
@@ -21,6 +27,14 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
+import java.util.Arrays;
 
 public class PreferencesActivity extends AppCompatActivity {
 
@@ -60,7 +74,32 @@ public class PreferencesActivity extends AppCompatActivity {
     }
 
     public static class PreferenceFragment extends PreferenceFragmentCompat {
-        private static final int REQUEST_CODE_ALERT_RINGTONE = 505;
+        private final ActivityResultLauncher<Intent> activityResultLauncher =
+                registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK
+                                && result.getData() != null) {
+
+                            Uri alarmRingtone = result.getData()
+                                    .getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+
+                            if (alarmRingtone != null) {
+                                final SharedPreferences sp = PreferenceManager
+                                        .getDefaultSharedPreferences(requireActivity());
+                                @SuppressLint("CommitPrefEdits")
+                                final SharedPreferences.Editor editor = sp.edit();
+
+                                editor.putString("alarmRingtone", alarmRingtone.toString());
+                                editor.apply();
+
+                                String ringtone = sp.getString("alarmRingtone", null);
+                                Log.d("SettingsSaved", ringtone);
+                            }
+                        }
+                    }
+                });
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -125,66 +164,49 @@ public class PreferencesActivity extends AppCompatActivity {
         @Override
         public boolean onPreferenceTreeClick(Preference preference) {
             if (preference.getKey().equals("alarmRingtone")) {
-                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE,
-                        RingtoneManager.TYPE_NOTIFICATION);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT,
-                        true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT,
-                        true);
-                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
-                        Settings.System.DEFAULT_NOTIFICATION_URI);
-
-                String existingValue = GetRingtonePreferenceValue();
-                if (existingValue != null) {
-                    if (existingValue.length() == 0) {
-                        // Select "Silent"
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
-                                (Uri) null);
-                    } else {
-                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
-                                Uri.parse(existingValue));
-                    }
-                } else {
-                    // No ringtone has been selected, set to the default
-                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
-                            Settings.System.DEFAULT_NOTIFICATION_URI);
-                }
-
-                startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE);
+                openSomeActivityForResult();
                 return true;
             } else {
                 return super.onPreferenceTreeClick(preference);
             }
         }
 
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            if (requestCode == REQUEST_CODE_ALERT_RINGTONE && data != null) {
-                Uri ringtone = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-                if (ringtone != null) {
-                    SetRingtonePreferenceValue(ringtone.toString());
+        public void openSomeActivityForResult() {
+            Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE,
+                    RingtoneManager.TYPE_NOTIFICATION);
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT,
+                    true);
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT,
+                    true);
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
+                    Settings.System.DEFAULT_NOTIFICATION_URI);
+
+            String existingValue = GetRingtonePreferenceValue();
+            if (existingValue != null) {
+                if (existingValue.length() == 0) {
+                    // Select "Silent"
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                            (Uri) null);
                 } else {
-                    SetRingtonePreferenceValue("");
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                            Uri.parse(existingValue));
                 }
             } else {
-                super.onActivityResult(requestCode, resultCode, data);
+                // No ringtone has been selected, set to the default
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                        Settings.System.DEFAULT_NOTIFICATION_URI);
             }
-        }
-
-        private void SetRingtonePreferenceValue(String ringtone)
-        {
-            Context context = requireActivity();
-            context.getSharedPreferences("alarmRingtone",
-                    Context.MODE_PRIVATE).edit().putString("alarmRingtone", ringtone).apply();
+            activityResultLauncher.launch(intent);
         }
 
         private String GetRingtonePreferenceValue()
         {
-            Context context = requireActivity();
-            return context.getSharedPreferences("alarmRingtone",
-                    Context.MODE_PRIVATE).getString("alarmRingtone",
-                    "content://settings/system/notification_sound");
+            final SharedPreferences sp = PreferenceManager
+                    .getDefaultSharedPreferences(requireActivity());
+            @SuppressLint("CommitPrefEdits") final SharedPreferences.Editor editor = sp.edit();
+
+            return sp.getString("alarmRingtone", null);
         }
     }
 }
